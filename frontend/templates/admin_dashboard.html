@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
+        <h1>Admin <span>Dashboard</span></h1>
+        <p>Overview of all ChargeEase activity.</p>
+    </div>
+    <div style="display:flex;gap:0.5rem;">
+        <a class="btn btn-outline" href="{{ url_for('admin_stations') }}">Manage Stations</a>
+        <a class="btn btn-outline" href="{{ url_for('admin_users') }}">Manage Users</a>
+        <a class="btn btn-outline" href="{{ url_for('admin_bookings') }}">Manage Bookings</a>
+    </div>
+</section>
+
+<section class="stat-grid">
+    <article class="stat-card">
+        <span class="stat-icon">👤</span>
+        <div><span class="stat-label">Total Users</span><strong>{{ total_users }}</strong><small>Registered accounts</small></div>
+    </article>
+    <article class="stat-card">
+        <span class="stat-icon">⚡</span>
+        <div><span class="stat-label">Total Stations</span><strong>{{ total_stations }}</strong><small>Charging stations</small></div>
+    </article>
+    <article class="stat-card">
+        <span class="stat-icon">▤</span>
+        <div><span class="stat-label">Total Bookings</span><strong>{{ total_bookings }}</strong><small>All time</small></div>
+    </article>
+    <article class="stat-card">
+        <span class="stat-icon">✓</span>
+        <div><span class="stat-label">Active Bookings</span><strong>{{ active_bookings }}</strong><small>Currently reserved</small></div>
+    </article>
+    <article class="stat-card">
+        <span class="stat-icon">★</span>
+        <div><span class="stat-label">Total Reviews</span><strong>{{ total_reviews }}</strong><small>User feedback</small></div>
+    </article>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-intro compact">
+        <div><h2>Recent Bookings</h2></div>
+        <a class="btn btn-outline btn-sm" href="{{ url_for('admin_bookings') }}">View all</a>
+    </div>
+
+    <div class="booking-container" style="display:grid;gap:1rem;">
+        {% for booking in recent_bookings %}
+        <article class="booking-card">
+            <div class="booking-main">
+                <div class="booking-station-icon">⚡</div>
+                <div>
+                    <span class="card-kicker">STATION ID {{ booking.station_id }}</span>
+                    <h2>{{ booking.station_name }}</h2>
+                    <p>👤 {{ booking.user_name }} · ⌖ {{ booking.location }}</p>
+                </div>
+            </div>
+            <span class="booking-status">{{ booking.status|capitalize }}</span>
+            <div class="booking-info">
+                <div><small>Booked by</small><strong>{{ booking.user_email }}</strong></div>
+                <div><small>Date</small><strong>{{ booking.created_at.strftime("%d %b %Y") }}</strong></div>
+                <div><small>Time</small><strong>{{ booking.created_at.strftime("%I:%M %p") }}</strong></div>
+            </div>
+        </article>
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">▤</span>
+            <h2>No bookings yet</h2>
+            <p>Bookings will appear here when users reserve slots.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-intro compact">
+        <div><h2>Recent Users</h2></div>
+        <a class="btn btn-outline btn-sm" href="{{ url_for('admin_users') }}">View all</a>
+    </div>
+
+    <div class="station-grid">
+        {% for user in recent_users %}
+        <article class="station-card">
+            <div class="station-card-title">
+                <div class="station-emblem">👤</div>
+                <div>
+                    <h2>{{ user.name }}</h2>
+                    <p class="station-location">✉ {{ user.email }}</p>
+                    <small style="color:var(--muted);">Joined {{ user.created_at.strftime("%d %b %Y") }}</small>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

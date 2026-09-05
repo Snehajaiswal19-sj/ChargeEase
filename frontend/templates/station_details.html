@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}{{ station.name }} | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="detail-hero">
+    <div>
+        <div class="station-id" style="margin-bottom:1rem;">STATION ID {{ station.station_id }}</div>
+        <h1>{{ station.name }}</h1>
+        <p class="station-location" style="font-size:1.125rem;">⌖ {{ station.location }}</p>
+        {% if avg_rating %}
+            <p class="station-rating">★ {{ avg_rating }} <small style="color:var(--muted);">({{ review_count }} review{{ "s" if review_count != 1 else "" }})</small></p>
+        {% else %}
+            <p class="station-rating no-rating">No ratings yet</p>
+        {% endif %}
+    </div>
+    <div style="display:flex;gap:0.5rem;flex-direction:column;align-items:flex-end;">
+        {% if station.available_slots > 0 %}
+            <span class="status available-status"><i></i> Available now</span>
+        {% else %}
+            <span class="status full-status"><i></i> Currently full</span>
+        {% endif %}
+        
+        {% if is_favorite %}
+        <form method="POST" action="{{ url_for('remove_favorite', station_id=station.station_id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline btn-sm" style="color:var(--warning);">★ Remove from favorites</button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('add_favorite', station_id=station.station_id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline btn-sm">☆ Add to favorites</button>
+        </form>
+        {% endif %}
+    </div>
+</section>
+
+{% if station.latitude and station.longitude %}
+<a class="btn btn-ghost btn-sm" href="{{ url_for('station_map') }}?to_lat={{ station.latitude }}&to_lng={{ station.longitude }}" style="margin-bottom:1.5rem;display:inline-flex;">📍 Get directions</a>
+{% endif %}
+
+<section class="station-detail-layout">
+    <div class="detail-main-card">
+        <div class="detail-card-top">
+            <div class="detail-symbol">⚡</div>
+            <div>
+                <span class="card-kicker">CHARGING STATION</span>
+                <h2 style="margin:0.25rem 0 0;">Station overview</h2>
+            </div>
+            <div class="detail-distance">
+                <strong>{{ "%.1f"|format(station.distance) }}</strong>
+                <span>km away</span>
+            </div>
+        </div>
+
+        <div class="details-info-grid">
+            <div class="details-info-box"><span style="font-size:1.5rem;">◉</span><small>Available</small><strong>{{ station.available_slots }}</strong></div>
+            <div class="details-info-box"><span style="font-size:1.5rem;">▣</span><small>Total slots</small><strong>{{ station.total_slots }}</strong></div>
+            <div class="details-info-box"><span style="font-size:1.5rem;">↝</span><small>Waiting</small><strong>{{ station.waiting_vehicles }}</strong></div>
+            <div class="details-info-box"><span style="font-size:1.5rem;">⚡</span><small>Charger</small><strong>{{ station.charger_type|capitalize }}</strong></div>
+        </div>
+
+        <div class="availability-section">
+            <div class="availability-heading">
+                <div>
+                    <span class="card-kicker">CAPACITY</span>
+                    <h2>Slot availability</h2>
+                    <p>Current charging capacity at this station.</p>
+                </div>
+                <strong>{{ station.available_slots }} <span>/ {{ station.total_slots }}</span></strong>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="availabilityFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="detail-side-card">
+        <span class="card-kicker">NEXT STEP</span>
+        <h2 style="font-size:1.5rem;">Ready to charge?</h2>
+        <p style="color:var(--muted);">Reserve a slot while availability is still open.</p>
+
+        {% if station.available_slots > 0 %}
+            <form method="POST" action="{{ url_for('book_station', station_id=station.station_id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-primary btn-full btn-gradient">Reserve charging slot</button>
+            </form>
+        {% else %}
+            <button type="button" class="btn btn-disabled btn-full" disabled>Currently full</button>
+        {% endif %}
+
+        <a href="{{ url_for('queue_station', station_id=station.station_id) }}" class="btn btn-outline btn-full" style="margin-top:0.75rem;">Check queue status</a>
+        
+        <a href="{{ url_for('cost_estimator') }}" class="btn btn-ghost btn-full" style="margin-top:0.75rem;">💰 Estimate charging cost</a>
+
+        {% if queue_status is defined %}
+            <div class="flash info" style="margin-top:1rem;">
+                <span class="flash-dot"></span>
+                {% if queue_status == 'QUEUE_OK' %}Queue check complete{% else %}Queue check unavailable{% endif %}
+            </div>
+        {% endif %}
+    </aside>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-intro compact">
+        <div><h2>What drivers are saying</h2></div>
+    </div>
+
+    {% if can_review %}
+    <div class="card" style="margin-bottom:1.5rem;">
+        <p><strong>{{ "Update your review" if my_review else "Rate this station" }}</strong></p>
+        <form method="POST" action="{{ url_for('submit_review', station_id=station.station_id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="star-select">
+                {% for i in range(5, 0, -1) %}
+                    <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" {% if my_review and my_review.rating == i %}checked{% endif %} required>
+                    <label for="star{{ i }}">★</label>
+                {% endfor %}
+            </div>
+            <textarea name="review_text" rows="3" maxlength="500" placeholder="Share your experience at this station (optional)" class="form-input" style="width:100%;">{{ my_review.review_text if my_review else "" }}</textarea>
+            <button type="submit" class="btn btn-primary" style="margin-top:0.75rem;">{{ "Update review" if my_review else "Submit review" }}</button>
+        </form>
+    </div>
+    {% elif reviews %}
+        <p style="color:var(--muted);font-size:0.875rem;margin-bottom:1rem;">Book a slot at this station to leave your own review.</p>
+    {% endif %}
+
+    {% if reviews %}
+        <div class="reviews-list">
+            {% for r in reviews %}
+            <div class="card" style="margin-bottom:1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <strong>{{ r.user_name }}</strong>
+                    <span style="color:var(--warning);">{{ "★" * r.rating }}{{ "☆" * (5 - r.rating) }}</span>
+                </div>
+                {% if r.review_text %}<p style="color:var(--text-soft);">{{ r.review_text }}</p>{% endif %}
+                <small style="color:var(--muted);">{{ r.created_at.strftime("%d %b %Y") }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color:var(--muted);font-size:0.875rem;">No reviews yet — be the first to share your experience.</p>
+    {% endif %}
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const availableSlots = Number("{{ station.available_slots }}");
+const totalSlots = Number("{{ station.total_slots }}");
+const availabilityFill = document.getElementById("availabilityFill");
+const percentage = totalSlots > 0 ? (availableSlots / totalSlots) * 100 : 0;
+availabilityFill.style.width = percentage + "%";
+</script>
+{% endblock %}

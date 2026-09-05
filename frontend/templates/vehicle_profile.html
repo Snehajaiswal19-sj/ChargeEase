@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}My Vehicle | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">MY EV</div>
+        <h1>My <span>vehicle profile</span></h1>
+        <p>Save your EV details so we can highlight compatible chargers for you on the map.</p>
+    </div>
+</section>
+
+<div class="auth-card" style="max-width:480px;">
+    <form method="POST" action="{{ url_for('vehicle_profile') }}" class="auth-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-field">
+            <label for="vehicle_model">Vehicle model</label>
+            <div class="input-wrap"><span>⚡</span><input type="text" id="vehicle_model" name="vehicle_model" placeholder="e.g. Tata Nexon EV" value="{{ vehicle.model if vehicle else '' }}" required maxlength="80"></div>
+        </div>
+
+        <div class="form-field">
+            <label for="connector_type">Connector type</label>
+            <div class="input-wrap">
+                <span>▭</span>
+                <select id="connector_type" name="connector_type" required style="width:100%;background:transparent;border:none;color:inherit;">
+                    <option value="" disabled {% if not vehicle %}selected{% endif %}>Select connector type</option>
+                    {% for c in connectors %}
+                        <option value="{{ c }}" {% if vehicle and vehicle.connector_type == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-field">
+            <label for="battery_capacity">Battery capacity (kWh)</label>
+            <div class="input-wrap"><span>▮</span><input type="number" id="battery_capacity" name="battery_capacity" placeholder="e.g. 40.5" step="0.1" min="1" max="300" value="{{ vehicle.battery_capacity if vehicle and vehicle.battery_capacity else '' }}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">Save vehicle</button>
+    </form>
+</div>
+
+{% endblock %}

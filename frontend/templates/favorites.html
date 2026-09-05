@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}My Favorites | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">SAVED STATIONS</div>
+        <h1>My <span>favorites</span></h1>
+        <p>Your frequently used charging stations, saved for quick access.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('stations') }}">Explore more stations</a>
+</section>
+
+{% if stations %}
+<div class="station-grid">
+    {% for station in stations %}
+    <article class="station-card">
+        <div class="station-card-top">
+            <span class="station-id">ID {{ station.station_id }}</span>
+            {% if station.available_slots > 0 %}
+                <span class="status available-status"><i></i> Available</span>
+            {% else %}
+                <span class="status full-status"><i></i> Full</span>
+            {% endif %}
+        </div>
+        
+        <div class="station-card-title">
+            <div class="station-emblem">⚡</div>
+            <div>
+                <h2>{{ station.name }}</h2>
+                <p class="station-location">⌖ {{ station.location }}</p>
+                {% if station.avg_rating %}
+                    <p class="station-rating">★ {{ station.avg_rating }} <small style="color:var(--muted);">({{ station.review_count }} review{{ "s" if station.review_count != 1 else "" }})</small></p>
+                {% else %}
+                    <p class="station-rating no-rating">No ratings yet</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="distance-row">
+            <span>Distance</span>
+            <strong>{{ "%.1f"|format(station.distance) }} km</strong>
+        </div>
+        
+        <div class="station-details">
+            <div><strong>{{ station.available_slots }}</strong><small>Available</small></div>
+            <div><strong>{{ station.total_slots }}</strong><small>Total</small></div>
+            <div><strong>{{ station.connector_type }}</strong><small>Connector</small></div>
+        </div>
+        
+        <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+            <a href="{{ url_for('station_details', station_id=station.station_id) }}" class="btn btn-primary btn-sm" style="flex:1;">View</a>
+            <form method="POST" action="{{ url_for('remove_favorite', station_id=station.station_id) }}" style="flex:1;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline btn-sm" style="width:100%;color:var(--danger);">Remove</button>
+            </form>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <span class="empty-icon">★</span>
+    <h2>No favorites yet</h2>
+    <p>Save stations you frequently use for quick access here.</p>
+    <a href="{{ url_for('stations') }}" class="btn btn-primary">Find stations</a>
+</div>
+{% endif %}
+
+{% endblock %}

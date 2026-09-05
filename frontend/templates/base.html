@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#070b12">
+    <title>{% block title %}ChargeEase{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <div class="site-shell">
+        <!-- Navbar -->
+        <header class="navbar">
+            <div class="navbar-inner">
+                <a class="brand" href="{{ url_for('home') }}">
+                    <span class="brand-mark">⚡</span>
+                    <span>ChargeEase</span>
+                </a>
+
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+
+                <nav class="main-nav" id="mainNav">
+                    <a class="{% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}">Home</a>
+                    {% if session.get('user_id') %}
+                        <a class="{% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a class="{% if request.endpoint == 'recommendations' %}active{% endif %}" href="{{ url_for('recommendations') }}">Recommended</a>
+                        <a class="{% if request.endpoint == 'favorites' %}active{% endif %}" href="{{ url_for('favorites') }}">Favorites</a>
+                        <a class="{% if request.endpoint == 'cost_estimator' %}active{% endif %}" href="{{ url_for('cost_estimator') }}">Cost</a>
+                        <a class="{% if request.endpoint == 'range_calculator' %}active{% endif %}" href="{{ url_for('range_calculator') }}">Range</a>
+                        <a class="{% if request.endpoint == 'stations' or request.endpoint == 'station_details' or request.endpoint == 'queue_station' %}active{% endif %}" href="{{ url_for('stations') }}">Stations</a>
+                        <a class="{% if request.endpoint == 'bookings' %}active{% endif %}" href="{{ url_for('bookings') }}">Bookings</a>
+                        <a class="{% if request.endpoint == 'station_map' %}active{% endif %}" href="{{ url_for('station_map') }}">Map</a>
+                        <a class="{% if request.endpoint == 'benchmark' %}active{% endif %}" href="{{ url_for('benchmark') }}">Benchmark</a>
+                        <a class="{% if request.endpoint == 'vehicle_profile' %}active{% endif %}" href="{{ url_for('vehicle_profile') }}">My Vehicle</a>
+                        {% if session.get('user_email') in ADMIN_EMAILS %}
+                            <a class="{% if request.endpoint in ['admin_dashboard', 'admin_stations', 'admin_add_station', 'admin_edit_station', 'admin_users', 'admin_bookings'] %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">Admin</a>
+                        {% endif %}
+                    {% endif %}
+                    <a class="{% if request.endpoint == 'about' %}active{% endif %}" href="{{ url_for('about') }}">About</a>
+                </nav>
+
+                <div class="nav-actions">
+                    {% if session.get('user_id') %}
+                        <div style="position:relative;">
+                            <button class="btn btn-ghost btn-sm" id="notifBell">🔔<span id="notifBadge" class="notif-badge" style="display:none;">0</span></button>
+                            <div class="notif-dropdown" id="notifDropdown">
+                                <div id="notifList"><div class="notif-empty">Loading...</div></div>
+                            </div>
+                        </div>
+                        <a class="btn btn-ghost btn-sm" href="{{ url_for('change_password') }}">{{ session.get('user_name', 'User') }}</a>
+                        <a class="btn btn-outline btn-sm" href="{{ url_for('logout') }}">Logout</a>
+                    {% else %}
+                        <a class="btn btn-ghost btn-sm" href="{{ url_for('login') }}">Login</a>
+                        <a class="btn btn-primary btn-sm" href="{{ url_for('register') }}">Get Started</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="page-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category if category in ['success', 'error', 'info'] else 'info' }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="container">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:2rem 0;border-top:1px solid var(--line);">
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                        <span class="brand-mark" style="width:32px;height:32px;font-size:1rem;">⚡</span>
+                        <span style="font-weight:700;">ChargeEase</span>
+                    </div>
+                    <div style="color:var(--muted);font-size:0.875rem;">
+                        © 2026 ChargeEase. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Navbar toggle
+        const navToggle = document.getElementById('navToggle');
+        const mainNav = document.getElementById('mainNav');
+        
+        if (navToggle && mainNav) {
+            navToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('open');
+            });
+        }
+    </script>
+
+    {% if session.get('user_id') %}
+    <script>
+        // Notifications
+        const bell = document.getElementById('notifBell');
+        const dropdown = document.getElementById('notifDropdown');
+        const badge = document.getElementById('notifBadge');
+        const list = document.getElementById('notifList');
+        const csrfToken = "{{ csrf_token() }}";
+        
+        if (bell) {
+            async function loadNotifications() {
+                try {
+                    const res = await fetch('/api/notifications');
+                    const data = await res.json();
+                    
+                    if (data.result !== 'OK') return;
+                    
+                    if (data.unread_count > 0) {
+                        badge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                    
+                    if (!data.notifications.length) {
+                        list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
+                        return;
+                    }
+                    
+                    list.innerHTML = data.notifications.map(n => `
+                        <div class="notif-item">
+                            <div>${n.message}</div>
+                            <small>${n.created_at}</small>
+                        </div>
+                    `).join('');
+                } catch (err) {
+                    list.innerHTML = '<div class="notif-empty">Could not load notifications.</div>';
+                }
+            }
+            
+            bell.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('open');
+                
+                if (dropdown.classList.contains('open')) {
+                    await loadNotifications();
+                    if (badge.style.display !== 'none') {
+                        await fetch('/api/notifications/mark-read', {
+                            method: 'POST',
+                            headers: { 'X-CSRFToken': csrfToken }
+                        });
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && e.target !== bell) {
+                    dropdown.classList.remove('open');
+                }
+            });
+            
+            loadNotifications();
+        }
+    </script>
+    {% endif %}
+
+    <script>
+        // Tilt effect on cards
+        const cards = document.querySelectorAll('.card, .station-card, .action-card');
+        const MAX_TILT = 5;
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const px = (x / rect.width) - 0.5;
+                const py = (y / rect.height) - 0.5;
+                
+                card.style.transform = `perspective(1000px) rotateX(${py * -MAX_TILT * 2}deg) rotateY(${px * MAX_TILT * 2}deg) translateY(-4px)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

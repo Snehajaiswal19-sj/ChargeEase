@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% block title %}Station Map | ChargeEase{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+<style>
+    #station-map {
+        width: 100%;
+        height: 520px;
+        border-radius: 16px;
+        margin-top: 1.5rem;
+        border: 1px solid var(--line);
+    }
+    .map-legend {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--panel);
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        font-size: 0.875rem;
+    }
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+    .leaflet-routing-container {
+        background: var(--panel);
+        color: var(--text);
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        max-height: 340px;
+        overflow-y: auto;
+        font-size: 0.875rem;
+    }
+    #directions-clear {
+        display: none;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">INTERACTIVE MAP</div>
+        <h1>Charging stations <span>near you</span></h1>
+        <p>
+            {% if user_connector %}
+                Stations matching your saved connector (<strong>{{ user_connector }}</strong>) are highlighted in green.
+            {% else %}
+                Add your vehicle in <a href="{{ url_for('vehicle_profile') }}" style="color:var(--primary);">My Vehicle</a> to highlight compatible stations.
+            {% endif %}
+        </p>
+    </div>
+    <button type="button" class="btn btn-primary" id="locate-me-btn">📍 Use my location</button>
+</section>
+
+<div id="station-map"></div>
+
+<div class="map-legend">
+    <span><span class="legend-dot" style="background:#00ff88;"></span> Compatible connector</span>
+    <span><span class="legend-dot" style="background:#00d4ff;"></span> Other ChargeEase stations</span>
+    <span><span class="legend-dot" style="background:#ffb020;"></span> Nearby real-world chargers</span>
+    <span><span class="legend-dot" style="background:#ff4757;"></span> Your location</span>
+</div>
+
+<p id="nearby-chargers-status" style="margin-top:1rem;color:var(--muted);font-size:0.875rem;">Loading nearby real-world chargers...</p>
+<button type="button" class="btn btn-outline btn-sm" id="directions-clear">Clear directions</button>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script>
+    const stations = {{ stations | tojson }};
+    const userConnector = {{ user_connector | tojson }};
+
+    const map = L.map('station-map').setView([19.076, 72.877], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let lastKnownUserLocation = null;
+    let routingControl = null;
+
+    function getDirections(destLat, destLng) {
+        if (!lastKnownUserLocation) {
+            if (!navigator.geolocation) {
+                alert('Location is not supported in this browser.');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(pos => {
+                lastKnownUserLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                drawRoute(destLat, destLng);
+            }, () => alert('Could not access your location. Please allow location permission.'));
+            return;
+        }
+        drawRoute(destLat, destLng);
+    }
+
+    function drawRoute(destLat, destLng) {
+        if (routingControl) map.removeControl(routingControl);
+
+        routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(lastKnownUserLocation.lat, lastKnownUserLocation.lng),
+                L.latLng(destLat, destLng)
+            ],
+            router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
+            lineOptions: { styles: [{ color: '#00d4ff', weight: 5, opacity: 0.85 }] },
+            addWaypoints: false,
+            draggableWaypoints: false,
+            fitSelectedRoutes: true,
+            show: true
+        }).addTo(map);
+
+        document.getElementById('directions-clear').style.display = 'inline-flex';
+    }
+
+    document.getElementById('directions-clear').addEventListener('click', () => {
+        if (routingControl) { map.removeControl(routingControl); routingControl = null; }
+        document.getElementById('directions-clear').style.display = 'none';
+    });
+
+    window.getDirections = getDirections;
+
+    stations.forEach(station => {
+        const isCompatible = userConnector && station.connector_type === userConnector;
+        const color = isCompatible ? '#00ff88' : '#00d4ff';
+
+        const marker = L.circleMarker([station.latitude, station.longitude], {
+            radius: 9,
+            color: color,
+            fillColor: color,
+            fillOpacity: 0.85,
+            weight: 2
+        }).addTo(map);
+
+        marker.bindPopup(
+            `<strong>${station.name}</strong><br>` +
+            `${station.location}<br>` +
+            `Connector: ${station.connector_type || 'N/A'}<br>` +
+            `Slots: ${station.available_slots}/${station.total_slots}<br>` +
+            `<a href="/station/${station.station_id}" style="color:#00d4ff;">View station</a><br>` +
+            `<a href="#" onclick="getDirections(${station.latitude},${station.longitude});return false;" style="color:#00d4ff;">Get directions</a>`
+        );
+    });
+
+    let userMarker = null;
+    let nearbyChargerMarkers = [];
+
+    async function loadNearbyChargers(lat, lng) {
+        document.getElementById('nearby-chargers-status').textContent = 'Loading nearby real-world chargers...';
+
+        nearbyChargerMarkers.forEach(m => map.removeLayer(m));
+        nearbyChargerMarkers = [];
+
+        try {
+            const res = await fetch(`/api/nearby-chargers?lat=${lat}&lng=${lng}`);
+            const data = await res.json();
+
+            if (data.result !== 'OK' || !data.chargers.length) {
+                document.getElementById('nearby-chargers-status').textContent = 'No real-world chargers found nearby.';
+                return;
+            }
+
+            data.chargers.forEach(charger => {
+                const marker = L.circleMarker([charger.latitude, charger.longitude], {
+                    radius: 7,
+                    color: '#ffb020',
+                    fillColor: '#ffb020',
+                    fillOpacity: 0.8,
+                    weight: 2
+                }).addTo(map);
+
+                marker.bindPopup(
+                    `<strong>${charger.name}</strong><br>` +
+                    `${charger.address || ''} ${charger.town || ''}<br>` +
+                    `Operator: ${charger.operator}<br>` +
+                    (charger.distance_km !== null ? `${charger.distance_km} km away<br>` : '') +
+                    (charger.id ? `<a href="/external-station/${charger.id}" style="color:#ffb020;">View full details</a><br>` : '') +
+                    `<a href="#" onclick="getDirections(${charger.latitude},${charger.longitude});return false;" style="color:#ffb020;">Get directions</a>`
+                );
+                nearbyChargerMarkers.push(marker);
+            });
+
+            document.getElementById('nearby-chargers-status').textContent =
+                `Found ${data.chargers.length} real-world chargers nearby (orange markers).`;
+        } catch (err) {
+            document.getElementById('nearby-chargers-status').textContent = 'Could not load nearby chargers right now.';
+        }
+    }
+
+    document.getElementById('locate-me-btn').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            alert('Location is not supported in this browser.');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude, longitude } = pos.coords;
+            lastKnownUserLocation = { lat: latitude, lng: longitude };
+            if (userMarker) map.removeLayer(userMarker);
+            userMarker = L.circleMarker([latitude, longitude], {
+                radius: 9,
+                color: '#ff4757',
+                fillColor: '#ff4757',
+                fillOpacity: 0.9,
+                weight: 2
+            }).addTo(map).bindPopup('You are here').openPopup();
+            map.setView([latitude, longitude], 13);
+
+            loadNearbyChargers(latitude, longitude);
+        }, () => {
+            alert('Could not access your location. Please allow location permission.');
+        });
+    });
+
+    // Show real-world stations immediately on page load, around the default map center.
+    loadNearbyChargers(19.076, 72.877);
+
+    // If arriving from a station's "Get directions" link, auto-draw the route.
+    const urlParams = new URLSearchParams(window.location.search);
+    const toLat = urlParams.get('to_lat');
+    const toLng = urlParams.get('to_lng');
+    if (toLat && toLng) {
+        getDirections(parseFloat(toLat), parseFloat(toLng));
+    }
+</script>
+{% endblock %}

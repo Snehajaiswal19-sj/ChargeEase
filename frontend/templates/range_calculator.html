@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}EV Range Calculator | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">CALCULATE</div>
+        <h1>Range <span>calculator</span></h1>
+        <p>Find out how far you can go with your current battery level.</p>
+    </div>
+</section>
+
+<div class="dashboard-callout" style="margin-bottom:1.5rem;">
+    <div class="callout-icon">📏</div>
+    <div>
+        <span class="card-kicker">HOW IT WORKS</span>
+        <h2>Know Your Range Before You Go</h2>
+        <p>Enter your battery details and see estimated range in different conditions.</p>
+    </div>
+</div>
+
+<div class="station-detail-layout">
+    <div class="detail-main-card">
+        <form method="POST" action="{{ url_for('range_calculator') }}" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="form-field">
+                <label for="battery_capacity">Battery Capacity (kWh)</label>
+                <div class="input-wrap"><span>🔋</span><input type="number" id="battery_capacity" name="battery_capacity" min="1" max="200" step="0.1" placeholder="e.g. 40" required></div>
+            </div>
+            
+            <div class="form-field">
+                <label for="current_percent">Current Battery (%)</label>
+                <div class="input-wrap"><span>🔋</span><input type="number" id="current_percent" name="current_percent" min="0" max="100" placeholder="e.g. 60" required></div>
+            </div>
+            
+            <div class="form-field">
+                <label for="efficiency">Efficiency (km/kWh)</label>
+                <div class="input-wrap"><span>📊</span><input type="number" id="efficiency" name="efficiency" min="1" max="10" step="0.1" placeholder="e.g. 5.5" required></div>
+                <small style="color:var(--muted);">Typical values: 4-7 km/kWh. Check your EV spec for exact figure.</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Calculate Range</button>
+        </form>
+    </div>
+    
+    <aside class="detail-side-card">
+        <span class="card-kicker">RESULT</span>
+        {% if result %}
+            <h2 style="font-size:2rem;color:var(--success);">{{ result.range_km }} km</h2>
+            <p style="color:var(--muted);">Estimated range with {{ result.current_percent }}% battery</p>
+            
+            <div class="station-details">
+                <div><strong>{{ result.city_range }}</strong><small>City km</small></div>
+                <div><strong>{{ result.range_km }}</strong><small>Mixed km</small></div>
+                <div><strong>{{ result.highway_range }}</strong><small>Highway km</small></div>
+            </div>
+            
+            <div class="distance-row">
+                <span>Available Energy</span>
+                <strong>{{ result.available_energy }} kWh</strong>
+            </div>
+            
+            <div class="distance-row">
+                <span>Battery</span>
+                <strong>{{ result.battery_capacity }} kWh</strong>
+            </div>
+        {% else %}
+            <p style="color:var(--muted);">Enter your battery details on the left and click Calculate to see your estimated range.</p>
+        {% endif %}
+    </aside>
+</div>
+
+{% endblock %}

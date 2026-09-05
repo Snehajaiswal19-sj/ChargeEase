@@ -1,0 +1,33 @@
+# Environment / secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# C build artifacts (keep source, ignore rebuilds if you regenerate locally)
+*.obj
+*.o
+
+# Node (if any tooling gets added later)
+node_modules/
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/

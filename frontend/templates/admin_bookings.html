@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Manage Bookings | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
+        <h1>Manage <span>Bookings</span></h1>
+        <p>All bookings across the platform.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('admin_dashboard') }}">← Back to admin</a>
+</section>
+
+<div class="booking-container" style="display:grid;gap:1rem;">
+    {% for booking in bookings %}
+    <article class="booking-card">
+        <div class="booking-main">
+            <div class="booking-station-icon">⚡</div>
+            <div>
+                <span class="card-kicker">STATION ID {{ booking.station_id }}</span>
+                <h2>{{ booking.station_name }}</h2>
+                <p>👤 {{ booking.user_name }} · ⌖ {{ booking.location }}</p>
+            </div>
+        </div>
+        <span class="booking-status {% if booking.status == 'cancelled' %}status-cancelled{% endif %}">{{ booking.status|capitalize }}</span>
+        <div class="booking-info">
+            <div><small>Booked by</small><strong>{{ booking.user_email }}</strong></div>
+            <div><small>Date</small><strong>{{ booking.created_at.strftime("%d %b %Y") }}</strong></div>
+            <div><small>Time</small><strong>{{ booking.created_at.strftime("%I:%M %p") }}</strong></div>
+        </div>
+    </article>
+    {% else %}
+    <div class="empty-state">
+        <span class="empty-icon">▤</span>
+        <h2>No bookings found</h2>
+        <p>Bookings will appear here when users reserve slots.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

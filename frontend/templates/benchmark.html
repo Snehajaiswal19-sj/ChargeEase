@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}DSA Benchmark | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">PERFORMANCE</div>
+        <h1>DSA <span>benchmarking</span></h1>
+        <p>Real performance data of Linear Search & Selection Sort implemented in C.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+</section>
+
+<div class="dashboard-callout" style="margin-bottom:1.5rem;">
+    <div class="callout-icon">📊</div>
+    <div>
+        <span class="card-kicker">HOW IT WORKS</span>
+        <h2>Measuring Real Execution Time</h2>
+        <p>Flask calls the C executables with different input sizes and measures execution time in milliseconds.</p>
+    </div>
+</div>
+
+<section class="dashboard-section">
+    <div class="section-intro compact">
+        <div><h2>Linear Search Performance</h2></div>
+        <span class="network-badge" style="display:flex;align-items:center;gap:0.75rem;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0.75rem 1rem;">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--primary);display:inline-block;"></span>
+            <div><strong style="display:block;font-size:0.875rem;">O(n)</strong><small style="color:var(--muted);">Time Complexity</small></div>
+        </span>
+    </div>
+    
+    <div class="card" style="margin-bottom:1.5rem;">
+        <canvas id="linearSearchChart" height="120"></canvas>
+    </div>
+    
+    <div class="station-grid" style="grid-template-columns:repeat(3,1fr);">
+        {% for result in linear_results %}
+        <div class="station-card">
+            <div class="distance-row"><span>n = {{ result.n }}</span><strong>{{ result.time_ms }} ms</strong></div>
+            <small style="color:var(--muted);">Element found: {{ result.found }}</small>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-intro compact">
+        <div><h2>Selection Sort Performance</h2></div>
+        <span class="network-badge" style="display:flex;align-items:center;gap:0.75rem;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0.75rem 1rem;">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;"></span>
+            <div><strong style="display:block;font-size:0.875rem;">O(n²)</strong><small style="color:var(--muted);">Time Complexity</small></div>
+        </span>
+    </div>
+    
+    <div class="card" style="margin-bottom:1.5rem;">
+        <canvas id="selectionSortChart" height="120"></canvas>
+    </div>
+    
+    <div class="station-grid" style="grid-template-columns:repeat(3,1fr);">
+        {% for result in sort_results %}
+        <div class="station-card">
+            <div class="distance-row"><span>n = {{ result.n }}</span><strong>{{ result.time_ms }} ms</strong></div>
+            <small style="color:var(--muted);">Comparisons: {{ result.comparisons }}</small>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Linear Search Chart
+    const linearCtx = document.getElementById('linearSearchChart').getContext('2d');
+    new Chart(linearCtx, {
+        type: 'line',
+        data: {
+            labels: {{ linear_results | map(attribute='n') | list | tojson }},
+            datasets: [{
+                label: 'Execution Time (ms)',
+                data: {{ linear_results | map(attribute='time_ms') | list | tojson }},
+                borderColor: '#00d4ff',
+                backgroundColor: 'rgba(0,212,255,0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { color: '#f0f4f8' } }
+            },
+            scales: {
+                x: { ticks: { color: '#8b98a9' }, title: { display: true, text: 'Input Size (n)', color: '#8b98a9' } },
+                y: { ticks: { color: '#8b98a9' }, title: { display: true, text: 'Time (ms)', color: '#8b98a9' } }
+            }
+        }
+    });
+
+    // Selection Sort Chart
+    const sortCtx = document.getElementById('selectionSortChart').getContext('2d');
+    new Chart(sortCtx, {
+        type: 'line',
+        data: {
+            labels: {{ sort_results | map(attribute='n') | list | tojson }},
+            datasets: [{
+                label: 'Execution Time (ms)',
+                data: {{ sort_results | map(attribute='time_ms') | list | tojson }},
+                borderColor: '#00ff88',
+                backgroundColor: 'rgba(0,255,136,0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { color: '#f0f4f8' } }
+            },
+            scales: {
+                x: { ticks: { color: '#8b98a9' }, title: { display: true, text: 'Input Size (n)', color: '#8b98a9' } },
+                y: { ticks: { color: '#8b98a9' }, title: { display: true, text: 'Time (ms)', color: '#8b98a9' } }
+            }
+        }
+    });
+</script>
+{% endblock %}

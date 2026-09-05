@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#070b12">
+    <title>Login | ChargeEase</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-page">
+    <div class="auth-shell">
+        <a class="auth-brand" href="{{ url_for('home') }}">
+            <span class="brand-mark">⚡</span><span>ChargeEase</span>
+        </a>
+
+        <div class="auth-card">
+            <div class="auth-card-head">
+                <span class="card-kicker">ACCOUNT ACCESS</span>
+                <h2>Sign in</h2>
+                <p>Enter your account details to continue.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}"><span class="flash-dot"></span><span>{{ message }}</span></div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+                <div class="form-field">
+                    <label for="email">Email address</label>
+                    <div class="input-wrap"><span>✉</span><input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required></div>
+                </div>
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap"><span>•</span><input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required></div>
+                    <a href="{{ url_for('forgot_password') }}" style="font-size:0.875rem;color:var(--muted);text-decoration:underline;display:inline-block;margin-top:0.5rem;">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+            </form>
+
+            <div class="auth-bottom">
+                <span>New to ChargeEase?</span>
+                <a href="{{ url_for('register') }}">Create an account</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Charging Cost Estimator | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">CALCULATE</div>
+        <h1>Cost <span>estimator</span></h1>
+        <p>Estimate charging time and cost based on your battery and charger power.</p>
+    </div>
+</section>
+
+<div class="dashboard-callout" style="margin-bottom:1.5rem;">
+    <div class="callout-icon">💰</div>
+    <div>
+        <span class="card-kicker">HOW IT WORKS</span>
+        <h2>Calculate Before You Charge</h2>
+        <p>Enter your battery details and target charger to see estimated time and cost.</p>
+    </div>
+</div>
+
+<div class="station-detail-layout">
+    <div class="detail-main-card">
+        <form method="POST" action="{{ url_for('cost_estimator') }}" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="form-field">
+                <label for="battery_capacity">Battery Capacity (kWh)</label>
+                <div class="input-wrap"><span>🔋</span><input type="number" id="battery_capacity" name="battery_capacity" min="1" max="200" step="0.1" placeholder="e.g. 40" required></div>
+            </div>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-field">
+                    <label for="current_percent">Current Battery (%)</label>
+                    <div class="input-wrap"><span>🔋</span><input type="number" id="current_percent" name="current_percent" min="0" max="100" placeholder="e.g. 20" required></div>
+                </div>
+                
+                <div class="form-field">
+                    <label for="target_percent">Target Battery (%)</label>
+                    <div class="input-wrap"><span>🎯</span><input type="number" id="target_percent" name="target_percent" min="1" max="100" placeholder="e.g. 80" required></div>
+                </div>
+            </div>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-field">
+                    <label for="charger_power">Charger Power (kW)</label>
+                    <div class="input-wrap"><span>⚡</span><input type="number" id="charger_power" name="charger_power" min="1" max="350" placeholder="e.g. 50" required></div>
+                </div>
+                
+                <div class="form-field">
+                    <label for="cost_per_kwh">Cost per kWh (₹)</label>
+                    <div class="input-wrap"><span>₹</span><input type="number" id="cost_per_kwh" name="cost_per_kwh" min="0" step="0.01" placeholder="e.g. 8.5" required></div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Calculate</button>
+        </form>
+    </div>
+    
+    <aside class="detail-side-card">
+        <span class="card-kicker">RESULT</span>
+        {% if result %}
+            <h2 style="font-size:2rem;color:var(--primary);">₹{{ result.cost }}</h2>
+            <p style="color:var(--muted);">Estimated cost for {{ result.energy_needed }} kWh</p>
+            
+            <div class="station-details">
+                <div><strong>{{ result.time_minutes }}</strong><small>Minutes</small></div>
+                <div><strong>{{ result.time_hours }}</strong><small>Hours</small></div>
+                <div><strong>{{ result.charger_power }}</strong><small>kW</small></div>
+            </div>
+            
+            <div class="distance-row">
+                <span>Energy Needed</span>
+                <strong>{{ result.energy_needed }} kWh</strong>
+            </div>
+            
+            <div class="distance-row">
+                <span>From</span>
+                <strong>{{ result.current_percent }}% → {{ result.target_percent }}%</strong>
+            </div>
+            
+            <div class="distance-row">
+                <span>Cost</span>
+                <strong>₹{{ result.cost }}</strong>
+            </div>
+        {% else %}
+            <p style="color:var(--muted);">Enter your details on the left and click Calculate to see estimated time and cost.</p>
+        {% endif %}
+    </aside>
+</div>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Manage Stations | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
+        <h1>Manage <span>Stations</span></h1>
+        <p>Add, edit, and remove charging stations.</p>
+    </div>
+    <div style="display:flex;gap:0.5rem;">
+        <a class="btn btn-outline" href="{{ url_for('admin_dashboard') }}">← Back</a>
+        <a class="btn btn-primary" href="{{ url_for('admin_add_station') }}">+ Add Station</a>
+    </div>
+</section>
+
+<section class="station-grid">
+    {% for station in stations %}
+    <article class="station-card">
+        <div class="station-card-top">
+            <span class="station-id">ID {{ station.station_id }}</span>
+            {% if station.available_slots > 0 %}
+                <span class="status available-status"><i></i> Available</span>
+            {% else %}
+                <span class="status full-status"><i></i> Full</span>
+            {% endif %}
+        </div>
+        
+        <div class="station-card-title">
+            <div class="station-emblem">⚡</div>
+            <div>
+                <h2>{{ station.name }}</h2>
+                <p class="station-location">⌖ {{ station.location }}</p>
+            </div>
+        </div>
+        
+        <div class="station-details">
+            <div><strong>{{ station.available_slots }}</strong><small>Available</small></div>
+            <div><strong>{{ station.total_slots }}</strong><small>Total</small></div>
+            <div><strong>{{ station.connector_type }}</strong><small>Connector</small></div>
+        </div>
+        
+        <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+            <a href="{{ url_for('admin_edit_station', station_id=station.station_id) }}" class="btn btn-outline btn-sm" style="flex:1;">Edit</a>
+            <form method="POST" action="{{ url_for('admin_delete_station', station_id=station.station_id) }}" style="flex:1;"
+                  onsubmit="return confirm('Delete this station? This will also delete all bookings and reviews.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline btn-sm" style="width:100%;color:var(--danger);">Delete</button>
+            </form>
+        </div>
+    </article>
+    {% else %}
+    <div class="empty-state">
+        <span class="empty-icon">⚡</span>
+        <h2>No stations found</h2>
+        <p>Add your first station to get started.</p>
+    </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

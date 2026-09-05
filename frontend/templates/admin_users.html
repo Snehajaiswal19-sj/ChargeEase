@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
+        <h1>Manage <span>Users</span></h1>
+        <p>All registered users.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('admin_dashboard') }}">← Back to admin</a>
+</section>
+
+<div class="station-grid">
+    {% for user in users %}
+    <article class="station-card">
+        <div class="station-card-title">
+            <div class="station-emblem">👤</div>
+            <div>
+                <h2>{{ user.name }}</h2>
+                <p class="station-location">✉ {{ user.email }}</p>
+                <small style="color:var(--muted);">Joined {{ user.created_at.strftime("%d %b %Y") }}</small>
+            </div>
+        </div>
+        {% if user.vehicle %}
+        <div class="distance-row">
+            <span>Vehicle</span>
+            <strong>{{ user.vehicle.model }}</strong>
+        </div>
+        <div class="charger-row">
+            <span class="charger-label">CONNECTOR</span>
+            <span class="charger-type">{{ user.vehicle.connector_type }}</span>
+        </div>
+        {% endif %}
+    </article>
+    {% else %}
+    <div class="empty-state">
+        <span class="empty-icon">👤</span>
+        <h2>No users found</h2>
+        <p>Users will appear here when they register.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

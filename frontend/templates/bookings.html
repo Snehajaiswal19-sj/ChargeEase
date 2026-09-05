@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}My Bookings | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">MANAGE</div>
+        <h1>My <span>bookings</span></h1>
+        <p>Keep track of the charging slots you have reserved.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('stations') }}">Find another station</a>
+</section>
+
+{% if bookings %}
+    <div class="booking-container" style="display:grid;gap:1rem;">
+        {% for booking in bookings %}
+        <article class="booking-card">
+            <div class="booking-main">
+                <div class="booking-station-icon">⚡</div>
+                <div>
+                    <span class="card-kicker">RESERVED STATION · ID {{ booking.station_id }}</span>
+                    <h2>{{ booking.station_name }}</h2>
+                    <p>⌖ {{ booking.location }}</p>
+                </div>
+            </div>
+
+            <span class="booking-status {% if booking.status == 'cancelled' %}status-cancelled{% endif %}">● {{ booking.status|capitalize }}</span>
+
+            <div class="booking-info">
+                <div><small>Charger type</small><strong>{{ booking.charger_type|default("EV Charger") }}</strong></div>
+                <div><small>Booking date</small><strong>{{ booking.created_at.strftime("%d %b %Y") }}</strong></div>
+                <div><small>Booking time</small><strong>{{ booking.created_at.strftime("%I:%M %p") }}</strong></div>
+            </div>
+
+            {% if booking.status == "reserved" %}
+            <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking._id) }}" class="cancel-booking-btn"
+                  onsubmit="return confirm('Cancel this booking? Your slot will be released.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline btn-full">Cancel booking</button>
+            </form>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <section class="empty-state">
+        <span class="empty-icon">⚡</span>
+        <h2>Your next charging stop is waiting.</h2>
+        <p>Explore the station network and reserve a slot when you're ready.</p>
+        <a href="{{ url_for('stations') }}" class="btn btn-primary btn-lg">Find charging stations</a>
+    </section>
+{% endif %}
+
+{% endblock %}

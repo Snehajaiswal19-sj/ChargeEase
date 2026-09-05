@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Edit Station | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
+        <h1>Edit <span>Station</span></h1>
+        <p>Update station details for ID {{ station.station_id }}.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('admin_stations') }}">← Back to stations</a>
+</section>
+
+<div class="auth-card" style="max-width:600px;">
+    <form method="POST" action="{{ url_for('admin_edit_station', station_id=station.station_id) }}" class="auth-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="form-field">
+            <label for="name">Station Name</label>
+            <div class="input-wrap"><span>⚡</span><input type="text" id="name" name="name" value="{{ station.name }}" required></div>
+        </div>
+        
+        <div class="form-field">
+            <label for="location">Location</label>
+            <div class="input-wrap"><span>📍</span><input type="text" id="location" name="location" value="{{ station.location }}" required></div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-field">
+                <label for="charger_type">Charger Type</label>
+                <div class="input-wrap">
+                    <span>⚡</span>
+                    <select id="charger_type" name="charger_type" required>
+                        <option value="AC Charger" {% if station.charger_type == 'AC Charger' %}selected{% endif %}>AC Charger</option>
+                        <option value="Fast Charger" {% if station.charger_type == 'Fast Charger' %}selected{% endif %}>Fast Charger</option>
+                        <option value="DC Fast Charger" {% if station.charger_type == 'DC Fast Charger' %}selected{% endif %}>DC Fast Charger</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-field">
+                <label for="connector_type">Connector Type</label>
+                <div class="input-wrap">
+                    <span>🔌</span>
+                    <select id="connector_type" name="connector_type" required>
+                        <option value="CCS2" {% if station.connector_type == 'CCS2' %}selected{% endif %}>CCS2</option>
+                        <option value="Type 2" {% if station.connector_type == 'Type 2' %}selected{% endif %}>Type 2</option>
+                        <option value="CHAdeMO" {% if station.connector_type == 'CHAdeMO' %}selected{% endif %}>CHAdeMO</option>
+                        <option value="GB/T" {% if station.connector_type == 'GB/T' %}selected{% endif %}>GB/T</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-field">
+                <label for="total_slots">Total Slots</label>
+                <div class="input-wrap"><span>▣</span><input type="number" id="total_slots" name="total_slots" min="1" max="20" value="{{ station.total_slots }}" required></div>
+            </div>
+            
+            <div class="form-field">
+                <label for="available_slots">Available Slots</label>
+                <div class="input-wrap"><span>✓</span><input type="number" id="available_slots" name="available_slots" min="0" max="{{ station.total_slots }}" value="{{ station.available_slots }}" required></div>
+            </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-field">
+                <label for="latitude">Latitude</label>
+                <div class="input-wrap"><span>🌐</span><input type="number" id="latitude" name="latitude" step="0.000001" value="{{ station.latitude if station.latitude else '' }}"></div>
+            </div>
+            
+            <div class="form-field">
+                <label for="longitude">Longitude</label>
+                <div class="input-wrap"><span>🌐</span><input type="number" id="longitude" name="longitude" step="0.000001" value="{{ station.longitude if station.longitude else '' }}"></div>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full">Update Station</button>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}{{ charger.name }} | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="station-id" style="margin-bottom:1rem;">🌐 REAL-WORLD CHARGER</div>
+        <h1>{{ charger.name }}</h1>
+        <p style="font-size:1.125rem;">⌖ {{ charger.address }}{% if charger.town %}, {{ charger.town }}{% endif %}{% if charger.postcode %} - {{ charger.postcode }}{% endif %}</p>
+    </div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <a class="btn btn-outline" href="{{ url_for('station_map') }}">Back to map</a>
+        {% if charger.latitude and charger.longitude %}
+        <a class="btn btn-outline" href="{{ url_for('station_map') }}?to_lat={{ charger.latitude }}&to_lng={{ charger.longitude }}">Get directions</a>
+        {% endif %}
+        <a class="btn btn-primary btn-gradient" href="{{ url_for('import_and_book', ocm_id=charger.id) }}">Book this station</a>
+    </div>
+</section>
+
+<div class="flash success" style="margin-bottom:1.5rem;">
+    <span class="flash-dot"></span>
+    <span>This is a real-world charger from the Open Charge Map community database. Tap "Book this station" to reserve a slot the same way you would for any ChargeEase station.</span>
+</div>
+
+<section class="stat-grid">
+    <article class="stat-card">
+        <span class="stat-icon">⚡</span>
+        <div><span class="stat-label">Operator</span><strong>{{ charger.operator }}</strong></div>
+    </article>
+    <article class="stat-card">
+        <span class="stat-icon">▤</span>
+        <div><span class="stat-label">Charging points</span><strong>{{ charger.num_points or "N/A" }}</strong></div>
+    </article>
+    {% if charger.last_verified %}
+    <article class="stat-card">
+        <span class="stat-icon">✓</span>
+        <div><span class="stat-label">Status</span><strong>{{ charger.last_verified }}</strong></div>
+    </article>
+    {% endif %}
+</section>
+
+{% if charger.connections %}
+<section class="dashboard-section">
+    <div class="section-intro compact">
+        <div><h2>Available connection types</h2></div>
+    </div>
+    <div class="station-details">
+        {% for c in charger.connections %}
+        <div>
+            <strong>{{ c.type }}</strong>
+            <small>{{ c.quantity }}x{% if c.power_kw %} · {{ c.power_kw }} kW{% endif %}</small>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if charger.usage_cost %}
+<section class="dashboard-callout">
+    <div class="callout-icon">₹</div>
+    <div>
+        <span class="card-kicker">USAGE COST</span>
+        <h2>{{ charger.usage_cost }}</h2>
+        <p>As reported by the Open Charge Map community. Confirm on-site.</p>
+    </div>
+</section>
+{% endif %}
+
+{% if charger.latitude and charger.longitude %}
+<section class="dashboard-callout">
+    <div class="callout-icon">📍</div>
+    <div>
+        <span class="card-kicker">LOCATION</span>
+        <h2>{{ "%.5f"|format(charger.latitude) }}, {{ "%.5f"|format(charger.longitude) }}</h2>
+        <p>Open in your maps app for turn-by-turn directions.</p>
+    </div>
+    <a class="btn btn-outline" href="https://www.openstreetmap.org/?mlat={{ charger.latitude }}&mlon={{ charger.longitude }}#map=17/{{ charger.latitude }}/{{ charger.longitude }}" target="_blank" rel="noopener">Open in maps</a>
+</section>
+{% endif %}
+
+{% endblock %}

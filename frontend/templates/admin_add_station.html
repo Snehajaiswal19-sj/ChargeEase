@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Add Station | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="page-hero compact-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
+        <h1>Add <span>Station</span></h1>
+        <p>Add a new charging station to the network.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('admin_stations') }}">← Back to stations</a>
+</section>
+
+<div class="auth-card" style="max-width:600px;">
+    <form method="POST" action="{{ url_for('admin_add_station') }}" class="auth-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="form-field">
+            <label for="name">Station Name</label>
+            <div class="input-wrap"><span>⚡</span><input type="text" id="name" name="name" placeholder="e.g. GreenCharge Hub" required></div>
+        </div>
+        
+        <div class="form-field">
+            <label for="location">Location</label>
+            <div class="input-wrap"><span>📍</span><input type="text" id="location" name="location" placeholder="e.g. Bandra West, Mumbai" required></div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-field">
+                <label for="charger_type">Charger Type</label>
+                <div class="input-wrap">
+                    <span>⚡</span>
+                    <select id="charger_type" name="charger_type" required>
+                        <option value="">Select</option>
+                        <option value="AC Charger">AC Charger</option>
+                        <option value="Fast Charger">Fast Charger</option>
+                        <option value="DC Fast Charger">DC Fast Charger</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-field">
+                <label for="connector_type">Connector Type</label>
+                <div class="input-wrap">
+                    <span>🔌</span>
+                    <select id="connector_type" name="connector_type" required>
+                        <option value="">Select</option>
+                        <option value="CCS2">CCS2</option>
+                        <option value="Type 2">Type 2</option>
+                        <option value="CHAdeMO">CHAdeMO</option>
+                        <option value="GB/T">GB/T</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-field">
+                <label for="total_slots">Total Slots</label>
+                <div class="input-wrap"><span>▣</span><input type="number" id="total_slots" name="total_slots" min="1" max="20" placeholder="e.g. 4" required></div>
+            </div>
+            
+            <div class="form-field">
+                <label for="distance">Distance (km)</label>
+                <div class="input-wrap"><span>↕</span><input type="number" id="distance" name="distance" min="0" step="0.1" placeholder="e.g. 2.5"></div>
+            </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-field">
+                <label for="latitude">Latitude</label>
+                <div class="input-wrap"><span>🌐</span><input type="number" id="latitude" name="latitude" step="0.000001" placeholder="e.g. 19.076"></div>
+            </div>
+            
+            <div class="form-field">
+                <label for="longitude">Longitude</label>
+                <div class="input-wrap"><span>🌐</span><input type="number" id="longitude" name="longitude" step="0.000001" placeholder="e.g. 72.877"></div>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full">Add Station</button>
+    </form>
+</div>
+
+{% endblock %}

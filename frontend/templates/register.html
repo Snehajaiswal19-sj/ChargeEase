@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#070b12">
+    <title>Create Account | ChargeEase</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-page">
+    <div class="auth-shell">
+        <a class="auth-brand" href="{{ url_for('home') }}">
+            <span class="brand-mark">⚡</span><span>ChargeEase</span>
+        </a>
+
+        <div class="auth-card">
+            <div class="auth-card-head">
+                <span class="card-kicker">GET STARTED</span>
+                <h2>Create account</h2>
+                <p>Set up your ChargeEase profile in a minute.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}"><span class="flash-dot"></span><span>{{ message }}</span></div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}" class="auth-form">
+                <div class="form-field">
+                    <label for="name">Full name</label>
+                    <div class="input-wrap"><span>◌</span><input type="text" id="name" name="name" placeholder="Your name" autocomplete="name" required></div>
+                </div>
+                <div class="form-field">
+                    <label for="email">Email address</label>
+                    <div class="input-wrap"><span>✉</span><input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required></div>
+                </div>
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap"><span>•</span><input type="password" id="password" name="password" placeholder="Create a password" autocomplete="new-password" required></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Create account</button>
+            </form>
+
+            <div class="auth-bottom">
+                <span>Already have an account?</span>
+                <a href="{{ url_for('login') }}">Login</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

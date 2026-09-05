@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | ChargeEase{% endblock %}
+{% block content %}
+
+<section class="dashboard-hero">
+    <div>
+        <div class="card-kicker" style="margin-bottom: 0.5rem;">WELCOME BACK</div>
+        <h1>Good to see you,<br><span>{{ session.get("user_name", "User") }}</span>.</h1>
+        <p>Everything you need for your next charging stop, in one place.</p>
+    </div>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('stations') }}">Find a station</a>
+</section>
+
+<section class="dashboard-callout">
+    <div class="callout-icon">🚗</div>
+    <div>
+        <span class="card-kicker">MY VEHICLE</span>
+        {% if vehicle %}
+            <h2>{{ vehicle.model }}</h2>
+            <p>Connector: {{ vehicle.connector_type }}{% if vehicle.battery_capacity %} · Battery: {{ vehicle.battery_capacity }} kWh{% endif %}</p>
+        {% else %}
+            <h2>Add your EV details</h2>
+            <p>Save your vehicle so we can highlight compatible chargers on the map.</p>
+        {% endif %}
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('vehicle_profile') }}">{{ "Edit vehicle" if vehicle else "Add vehicle" }}</a>
+</section>
+
+<section class="dashboard-callout">
+    <div class="callout-icon">📍</div>
+    <div>
+        <span class="card-kicker">NEARBY STATIONS</span>
+        <h2>Find stations closest to you</h2>
+        <p id="nearby-status">We use your live location just for this search — it is never stored.</p>
+    </div>
+    <button type="button" class="btn btn-outline" id="find-nearby-btn">Find nearby</button>
+</section>
+
+<div id="nearby-results" class="stat-grid" style="display:none;"></div>
+
+<section class="dashboard-callout">
+    <div class="callout-icon">⌕</div>
+    <div>
+        <span class="card-kicker">STATION SEARCH</span>
+        <h2>Where do you want to charge?</h2>
+        <p>Search by station ID, name or location and see live station details.</p>
+    </div>
+    <a class="btn btn-outline" href="{{ url_for('stations') }}">Explore stations</a>
+</section>
+
+{% if favorite_stations %}
+<section class="dashboard-section">
+    <div class="section-intro compact">
+        <div><h2>Your Favorite Stations</h2></div>
+        <a class="btn btn-outline btn-sm" href="{{ url_for('favorites') }}">View all</a>
+    </div>
+    
+    <div class="station-grid">
+        {% for station in favorite_stations[:3] %}
+        <article class="station-card">
+            <div class="station-card-top">
+                <span class="station-id">ID {{ station.station_id }}</span>
+                {% if station.available_slots > 0 %}
+                    <span class="status available-status"><i></i> Available</span>
+                {% else %}
+                    <span class="status full-status"><i></i> Full</span>
+                {% endif %}
+            </div>
+            <div class="station-card-title">
+                <div class="station-emblem">⚡</div>
+                <div>
+                    <h2>{{ station.name }}</h2>
+                    <p class="station-location">⌖ {{ station.location }}</p>
+                </div>
+            </div>
+            <div class="distance-row"><span>Distance</span><strong>{{ "%.1f"|format(station.distance) }} km</strong></div>
+            <a href="{{ url_for('station_details', station_id=station.station_id) }}" class="station-view-btn" style="margin-top:10px;display:block;text-align:center;">View Station</a>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="stat-grid">
+    <article class="stat-card">
+        <span class="stat-icon">⚡</span>
+        <div><span class="stat-label">Charging network</span><strong>Live</strong><small>Station data from MongoDB</small></div>
+    </article>
+    <article class="stat-card">
+        <span class="stat-icon">↗</span>
+        <div><span class="stat-label">Distance sorting</span><strong>C powered</strong><small>Selection Sort integration</small></div>
+    </article>
+    <article class="stat-card">
+        <span class="stat-icon">◉</span>
+        <div><span class="stat-label">Station search</span><strong>Live</strong><small>C Linear Search + Flask</small></div>
+    </article>
+</section>
+
+<section class="dashboard-section">
+    <div class="section-intro compact">
+        <div><h2>What would you like to do?</h2></div>
+    </div>
+
+    <div class="action-grid">
+        <a class="action-card" href="{{ url_for('recommendations') }}">
+            <span class="action-icon">★</span>
+            <h3>Recommended stations</h3>
+            <p>Get personalized recommendations based on distance, availability, and rating.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+        <a class="action-card" href="{{ url_for('cost_estimator') }}">
+            <span class="action-icon">💰</span>
+            <h3>Charging cost estimator</h3>
+            <p>Estimate charging time and cost based on your battery and charger power.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+        <a class="action-card" href="{{ url_for('range_calculator') }}">
+            <span class="action-icon">📏</span>
+            <h3>EV range calculator</h3>
+            <p>Find out how far you can go with your current battery level.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+        <a class="action-card" href="{{ url_for('stations') }}">
+            <span class="action-icon">⌕</span>
+            <h3>Find charging stations</h3>
+            <p>Explore stations, compare availability and open detailed station information.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+        <a class="action-card" href="{{ url_for('favorites') }}">
+            <span class="action-icon">★</span>
+            <h3>My favorites</h3>
+            <p>Access your frequently used stations quickly.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+        <a class="action-card" href="{{ url_for('bookings') }}">
+            <span class="action-icon">▤</span>
+            <h3>My bookings</h3>
+            <p>Review the charging slots you have already reserved.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+        <a class="action-card" href="{{ url_for('benchmark') }}">
+            <span class="action-icon">📊</span>
+            <h3>DSA Benchmarking</h3>
+            <p>See real performance data of Linear Search & Selection Sort.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+        <a class="action-card" href="{{ url_for('station_map') }}">
+            <span class="action-icon">🗺️</span>
+            <h3>Station Map</h3>
+            <p>Explore all charging stations on an interactive map.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+        <a class="action-card" href="{{ url_for('about') }}">
+            <span class="action-icon">ℹ️</span>
+            <h3>About ChargeEase</h3>
+            <p>Learn how ChargeEase works and what makes it unique.</p>
+            <span class="action-arrow">↗</span>
+        </a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('find-nearby-btn').addEventListener('click', () => {
+        const statusEl = document.getElementById('nearby-status');
+        const resultsEl = document.getElementById('nearby-results');
+
+        if (!navigator.geolocation) {
+            statusEl.textContent = 'Location is not supported in this browser.';
+            return;
+        }
+
+        statusEl.textContent = 'Getting your location...';
+
+        navigator.geolocation.getCurrentPosition(async pos => {
+            const { latitude, longitude } = pos.coords;
+            statusEl.textContent = 'Searching nearby stations...';
+
+            try {
+                const res = await fetch(`/api/nearby-stations?lat=${latitude}&lng=${longitude}`);
+                const data = await res.json();
+
+                if (data.result !== 'OK' || !data.stations.length) {
+                    statusEl.textContent = 'No nearby stations found.';
+                    resultsEl.style.display = 'none';
+                    return;
+                }
+
+                resultsEl.innerHTML = data.stations.slice(0, 3).map(s => `
+                    <article class="stat-card">
+                        <span class="stat-icon">⚡</span>
+                        <div>
+                            <span class="stat-label">${s.name}</span>
+                            <strong>${s.distance} km away</strong>
+                            <small>${s.location} · ${s.available_slots}/${s.total_slots} slots free</small>
+                        </div>
+                    </article>
+                `).join('');
+                resultsEl.style.display = 'grid';
+                statusEl.textContent = 'Showing your 3 closest stations, sorted by real distance.';
+            } catch (err) {
+                statusEl.textContent = 'Something went wrong while searching nearby stations.';
+            }
+        }, () => {
+            statusEl.textContent = 'Location permission denied. Enable it to find nearby stations.';
+        });
+    });
+</script>
+{% endblock %}
