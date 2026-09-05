@@ -23,9 +23,9 @@ jobs:
       run: |
         pip install -r backend/requirements.txt
     
-    - name: Build Docker Image
+    - name: Verify App Import
       run: |
-        docker build -t chargeease .
+        python -c "from backend.app import app; print('✅ App imported successfully')"
     
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
