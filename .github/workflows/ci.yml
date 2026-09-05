@@ -22,10 +22,16 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install -r backend/requirements.txt
+        pip install gunicorn
+    
+    - name: List Files
+      run: |
+        ls -la
+        ls -la backend/
     
     - name: Verify App Import
       run: |
-        python -c "from backend.app import app; print('✅ App imported successfully')"
+        python -c "import sys; sys.path.insert(0, 'backend'); from app import app; print('✅ App imported successfully')"
     
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
