@@ -1,0 +1,202 @@
+/* ============================================
+   ChargeEase - Cinematic Hero
+   ============================================ */
+
+.scroll-hero {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+/* Photo Background with Parallax */
+.hero-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120vh;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+/* Gradient Overlay */
+.hero-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: 
+    linear-gradient(180deg, rgba(10,10,10,0.7) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0.9) 100%),
+    radial-gradient(circle at 30% 70%, rgba(6,255,165,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(139,92,246,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+
+/* Scroll Progress */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #06ffa5, #8b5cf6, #ec4899);
+  z-index: 100;
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* Navigation */
+.hero-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(10,10,10,0.9), transparent);
+  backdrop-filter: blur(10px);
+}
+
+.hero-nav-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #06ffa5;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 20px rgba(6,255,165,0.5);
+}
+
+.hero-nav-menu {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.hero-nav-menu a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.hero-nav-menu a:hover,
+.hero-nav-menu a.active {
+  color: #06ffa5;
+  text-shadow: 0 0 10px rgba(6,255,165,0.5);
+}
+
+/* Sections */
+.hero-sections {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+.section-content {
+  max-width: 700px;
+  text-align: center;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.section-content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-headline {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #06ffa5, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 40px rgba(6,255,165,0.3);
+}
+
+.section-subheadline {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.section-body {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 500px;
+  margin: 0 auto;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  transition: opacity 0.5s ease;
+}
+
+.loading-overlay.loaded {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-text {
+  color: #06ffa5;
+  font-size: 1.2rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-nav-menu {
+    display: none;
+  }
+  
+  .hero-section {
+    padding: 4rem 1.5rem;
+  }
+  
+  .hero-3d {
+    width: 300px;
+    height: 300px;
+  }
+}

@@ -122,17 +122,7 @@ def send_email_async(to_email, subject, body):
 
 @app.route("/")
 def home():
-    featured_station = stations_collection.find_one(
-        {"available_slots": {"$gt": 0}},
-        {"_id": 0},
-        sort=[("distance", 1)]
-    )
-    map_stations = list(stations_collection.find(
-        {"latitude": {"$exists": True}, "longitude": {"$exists": True}},
-        {"_id": 0, "latitude": 1, "longitude": 1}
-    ))
-    total_stations = stations_collection.count_documents({})
-    return render_template("index.html", featured_station=featured_station, map_stations=map_stations, total_stations=total_stations)
+    return render_template("index.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -202,6 +192,7 @@ def forgot_password():
                 f"If you didn't request this, you can safely ignore this email.\n\n- ChargeEase"
             )
 
+        # Same message whether or not the email is registered, so we don't leak account existence.
         flash("If that email is registered, a password reset link has been sent.", "success")
         return redirect(url_for("login"))
 
@@ -1323,6 +1314,7 @@ def admin_edit_station(station_id):
             "available_slots": available_slots,
         }
         
+        # Optional fields
         if request.form.get("latitude", "").strip():
             update_data["latitude"] = float(request.form.get("latitude"))
         if request.form.get("longitude", "").strip():

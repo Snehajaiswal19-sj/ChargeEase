@@ -1,138 +1,108 @@
 {% extends 'base.html' %}
-{% block title %}ChargeEase | Smart EV Charging{% endblock %}
+{% block title %}ChargeEase | Premium EV Charging{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
 <style>
-    #hero-network-map {
-        width: 100%;
-        height: 100%;
-        border-radius: 16px;
-        filter: saturate(0.8) brightness(0.9) contrast(1.1);
-        border: 1px solid var(--line);
-    }
+  .navbar { display: none; }
+  .site-footer { display: none; }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<section class="hero-section">
-    <div class="hero-content">
-        <div class="hero-copy">
-            <div class="card-kicker" style="margin-bottom: 1rem;">⚡ SMART CHARGING PLATFORM</div>
-            <h1>Find your charge.<br><span>Keep moving.</span></h1>
-            <p class="hero-lead">
-                Discover charging stations, check real-time slot availability,
-                and reserve your next stop with a simpler charging experience.
-            </p>
-
-            <div class="hero-actions">
-                <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}">
-                    Find a charging station
-                </a>
-                <a class="btn btn-ghost btn-lg" href="{{ url_for('about') }}">
-                    How ChargeEase works
-                </a>
-            </div>
-
-            <div class="hero-trust">
-                <span class="trust-item"><i>✓</i> Station discovery</span>
-                <span class="trust-item"><i>✓</i> Slot availability</span>
-                <span class="trust-item"><i>✓</i> Easy booking</span>
-            </div>
-
-            {% if total_stations %}
-            <div class="hero-stat-strip">
-                <div><strong>{{ total_stations }}</strong><span>Real stations</span></div>
-                <div><strong>24/7</strong><span>Live availability</span></div>
-                <div><strong>4.8★</strong><span>User rating</span></div>
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="hero-visual">
-            <div style="position:relative;width:100%;height:500px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-lg);">
-                <div id="hero-network-map"></div>
-                <div style="position:absolute;bottom:1rem;left:1rem;right:1rem;background:rgba(7,11,18,0.85);backdrop-filter:blur(12px);border-radius:12px;padding:1rem;border:1px solid var(--line);">
-                    <span class="card-kicker">LIVE NETWORK</span>
-                    <h3 style="margin:0.5rem 0 0.25rem;">{{ total_stations }} real charging stations</h3>
-                    <p style="margin:0;font-size:0.875rem;color:var(--muted);">Every dot is a genuine station you can search, compare and book.</p>
-                </div>
-            </div>
-        </div>
+<!-- Cinematic Hero - Homepage -->
+<div class="scroll-hero">
+  
+  <!-- Photo Background (Fixed, Cinematic) -->
+  <div class="hero-bg">
+    <img src="{{ url_for('static', filename='images/ev-station-1.jpg') }}" alt="EV Charging Station">
+  </div>
+  
+  <!-- Gradient Overlay -->
+  <div class="hero-overlay"></div>
+  
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+  
+  <!-- Navigation -->
+  <nav class="hero-nav">
+    <div class="hero-nav-logo">⚡ CHARGEASE</div>
+    <div class="hero-nav-menu">
+      <a href="#hero" class="active">Home</a>
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#cta">Get Started</a>
     </div>
-</section>
-
-<section class="dashboard-section">
-    <div class="section-intro">
-        <div>
-            <h2>Everything you need<br>before you plug in.</h2>
+  </nav>
+  
+  <!-- Sections -->
+  <div class="hero-sections">
+    <section class="hero-section" id="hero">
+      <div class="section-content">
+        <h1 class="section-headline">ChargeEase</h1>
+        <h2 class="section-subheadline">Beyond Charging</h2>
+        <p class="section-body">Find, compare, and book EV charging stations with ease</p>
+        <div style="margin-top:2rem;">
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #06ffa5, #8b5cf6); color: #000; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; text-decoration: none;">Get Started</a>
+          <a href="{{ url_for('stations') }}" class="btn btn-outline btn-lg" style="padding: 1rem 2rem; border-radius: 12px; font-weight: 700; text-decoration: none; color: #fff; border: 2px solid rgba(255,255,255,0.3);">Find Stations</a>
         </div>
-        <p>One calm, focused interface for finding stations, checking capacity and managing your charging plans.</p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
-        <article class="card action-card">
-            <span class="action-icon">⌕</span>
-            <h3>Search smarter</h3>
-            <p>Find stations by ID, name or location with live search connected to the application backend.</p>
-        </article>
-        <article class="card action-card">
-            <span class="action-icon">◉</span>
-            <h3>Know before you go</h3>
-            <p>See available slots, total capacity, waiting vehicles, charger type and distance at a glance.</p>
-        </article>
-        <article class="card action-card">
-            <span class="action-icon">↗</span>
-            <h3>Reserve with ease</h3>
-            <p>Open a station, review its availability and reserve a charging slot through the existing booking flow.</p>
-        </article>
-    </div>
-</section>
-
-<section class="dashboard-section">
-    <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:2rem;">
-        <div>
-            <h2 style="margin-bottom:0.5rem;">Make your next charge a little easier.</h2>
-            <p style="color:var(--muted);margin:0;">Join thousands of EV drivers using ChargeEase.</p>
+      </div>
+    </section>
+    
+    <section class="hero-section" id="about">
+      <div class="section-content">
+        <h1 class="section-headline">Innovation</h1>
+        <h2 class="section-subheadline">Through Design</h2>
+        <p class="section-body">Our platform combines real-time data, smart algorithms, and premium design to make EV charging effortless</p>
+      </div>
+    </section>
+    
+    <section class="hero-section" id="features">
+      <div class="section-content">
+        <h1 class="section-headline">Features</h1>
+        <h2 class="section-subheadline">Everything You Need</h2>
+        <p class="section-body">Real stations, live availability, smart recommendations, cost estimation, and more</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;max-width:600px;margin-left:auto;margin-right:auto;">
+          <div style="background:rgba(255,255,255,0.1);padding:1rem;border-radius:12px;backdrop-filter:blur(10px);">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">⚡</div>
+            <strong style="color:#fff;display:block;">Real Stations</strong>
+            <small style="color:rgba(255,255,255,0.7);">Live data from Open Charge Map</small>
+          </div>
+          <div style="background:rgba(255,255,255,0.1);padding:1rem;border-radius:12px;backdrop-filter:blur(10px);">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">🧠</div>
+            <strong style="color:#fff;display:block;">Smart Picks</strong>
+            <small style="color:rgba(255,255,255,0.7);">Personalized recommendations</small>
+          </div>
+          <div style="background:rgba(255,255,255,0.1);padding:1rem;border-radius:12px;backdrop-filter:blur(10px);">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">💰</div>
+            <strong style="color:#fff;display:block;">Cost Estimator</strong>
+            <small style="color:rgba(255,255,255,0.7);">Calculate charging costs</small>
+          </div>
         </div>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}">Create your account</a>
-    </div>
-</section>
+      </div>
+    </section>
+    
+    <section class="hero-section" id="cta">
+      <div class="section-content">
+        <h1 class="section-headline">Get Started</h1>
+        <h2 class="section-subheadline">Join ChargeEase Today</h2>
+        <p class="section-body">Create your free account and start finding charging stations near you</p>
+        <div style="margin-top:2rem;">
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #06ffa5, #8b5cf6); color: #000; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; text-decoration: none;">Create Account</a>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <!-- Loading -->
+  <div class="loading-overlay">
+    <div class="loading-text">Loading</div>
+  </div>
+</div>
 
 {% endblock %}
 
 {% block scripts %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script>
-    const stations = {{ map_stations | tojson }};
-
-    if (stations.length && document.getElementById("hero-network-map")) {
-        const map = L.map('hero-network-map', {
-            zoomControl: false,
-            dragging: false,
-            scrollWheelZoom: false,
-            doubleClickZoom: false,
-            attributionControl: false
-        });
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19
-        }).addTo(map);
-
-        const bounds = [];
-        stations.forEach(s => {
-            L.circleMarker([s.latitude, s.longitude], {
-                radius: 5,
-                color: '#00d4ff',
-                fillColor: '#00d4ff',
-                fillOpacity: 0.9,
-                weight: 0
-            }).addTo(map);
-            bounds.push([s.latitude, s.longitude]);
-        });
-
-        map.fitBounds(bounds, { padding: [30, 30] });
-    }
-</script>
+<script src="{{ url_for('static', filename='js/hero.js') }}"></script>
 {% endblock %}

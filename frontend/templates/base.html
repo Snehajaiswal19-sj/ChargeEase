@@ -3,9 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#070b12">
+    <meta name="theme-color" content="#0a0a0a">
     <title>{% block title %}ChargeEase{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
     {% block head %}{% endblock %}
 </head>
 
@@ -85,12 +86,12 @@
         <!-- Footer -->
         <footer class="site-footer">
             <div class="container">
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:2rem 0;border-top:1px solid var(--line);">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:2rem 0;border-top:1px solid rgba(255,255,255,0.1);">
                     <div style="display:flex;align-items:center;gap:0.5rem;">
                         <span class="brand-mark" style="width:32px;height:32px;font-size:1rem;">⚡</span>
                         <span style="font-weight:700;">ChargeEase</span>
                     </div>
-                    <div style="color:var(--muted);font-size:0.875rem;">
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.875rem;">
                         © 2026 ChargeEase. All rights reserved.
                     </div>
                 </div>
@@ -178,27 +179,24 @@
     {% endif %}
 
     <script>
-        // Tilt effect on cards
-        const cards = document.querySelectorAll('.card, .station-card, .action-card');
-        const MAX_TILT = 5;
-        
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const px = (x / rect.width) - 0.5;
-                const py = (y / rect.height) - 0.5;
-                
-                card.style.transform = `perspective(1000px) rotateX(${py * -MAX_TILT * 2}deg) rotateY(${px * MAX_TILT * 2}deg) translateY(-4px)`;
-            });
+        // Scroll Reveal Animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
             
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = '';
-            });
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.2 });
+            
+            reveals.forEach(el => observer.observe(el));
+            
+            // Page enter animation
+            document.querySelector('.page-container')?.classList.add('page-enter');
         });
     </script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     {% block scripts %}{% endblock %}
 </body>
