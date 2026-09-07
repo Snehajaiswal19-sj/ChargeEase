@@ -2,16 +2,21 @@
 {% block title %}Edit Station | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
-        <h1>Edit <span>Station</span></h1>
+        <h1>Edit <span class="gradient-text">Station</span></h1>
         <p>Update station details for ID {{ station.station_id }}.</p>
     </div>
     <a class="btn btn-outline" href="{{ url_for('admin_stations') }}">← Back to stations</a>
 </section>
 
-<div class="auth-card" style="max-width:600px;">
+<div class="auth-card glass-card" style="max-width:600px;margin:0 auto;">
     <form method="POST" action="{{ url_for('admin_edit_station', station_id=station.station_id) }}" class="auth-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
@@ -78,6 +83,8 @@
         
         <button type="submit" class="btn btn-primary btn-full">Update Station</button>
     </form>
+</div>
+
 </div>
 
 {% endblock %}

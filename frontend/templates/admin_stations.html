@@ -2,10 +2,15 @@
 {% block title %}Manage Stations | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
-        <h1>Manage <span>Stations</span></h1>
+        <h1>Manage <span class="gradient-text">Stations</span></h1>
         <p>Add, edit, and remove charging stations.</p>
     </div>
     <div style="display:flex;gap:0.5rem;">
@@ -16,7 +21,7 @@
 
 <section class="station-grid">
     {% for station in stations %}
-    <article class="station-card">
+    <article class="station-card glass-card reveal">
         <div class="station-card-top">
             <span class="station-id">ID {{ station.station_id }}</span>
             {% if station.available_slots > 0 %}
@@ -50,12 +55,14 @@
         </div>
     </article>
     {% else %}
-    <div class="empty-state">
+    <div class="empty-state glass-card">
         <span class="empty-icon">⚡</span>
         <h2>No stations found</h2>
         <p>Add your first station to get started.</p>
     </div>
     {% endfor %}
 </section>
+
+</div>
 
 {% endblock %}

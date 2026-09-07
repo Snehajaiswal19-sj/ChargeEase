@@ -2,16 +2,21 @@
 {% block title %}DSA Benchmark | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">PERFORMANCE</div>
-        <h1>DSA <span>benchmarking</span></h1>
+        <h1>DSA <span class="gradient-text">benchmarking</span></h1>
         <p>Real performance data of Linear Search & Selection Sort implemented in C.</p>
     </div>
     <a class="btn btn-outline" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
 </section>
 
-<div class="dashboard-callout" style="margin-bottom:1.5rem;">
+<div class="dashboard-callout glass-card reveal" style="margin-bottom:1.5rem;">
     <div class="callout-icon">📊</div>
     <div>
         <span class="card-kicker">HOW IT WORKS</span>
@@ -23,19 +28,19 @@
 <section class="dashboard-section">
     <div class="section-intro compact">
         <div><h2>Linear Search Performance</h2></div>
-        <span class="network-badge" style="display:flex;align-items:center;gap:0.75rem;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0.75rem 1rem;">
+        <span class="network-badge glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;border-radius:12px;">
             <span style="width:8px;height:8px;border-radius:50%;background:var(--primary);display:inline-block;"></span>
             <div><strong style="display:block;font-size:0.875rem;">O(n)</strong><small style="color:var(--muted);">Time Complexity</small></div>
         </span>
     </div>
     
-    <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card glass-card reveal" style="margin-bottom:1.5rem;">
         <canvas id="linearSearchChart" height="120"></canvas>
     </div>
     
     <div class="station-grid" style="grid-template-columns:repeat(3,1fr);">
         {% for result in linear_results %}
-        <div class="station-card">
+        <div class="station-card glass-card reveal">
             <div class="distance-row"><span>n = {{ result.n }}</span><strong>{{ result.time_ms }} ms</strong></div>
             <small style="color:var(--muted);">Element found: {{ result.found }}</small>
         </div>
@@ -46,25 +51,27 @@
 <section class="dashboard-section">
     <div class="section-intro compact">
         <div><h2>Selection Sort Performance</h2></div>
-        <span class="network-badge" style="display:flex;align-items:center;gap:0.75rem;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0.75rem 1rem;">
-            <span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;"></span>
+        <span class="network-badge glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;border-radius:12px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--secondary);display:inline-block;"></span>
             <div><strong style="display:block;font-size:0.875rem;">O(n²)</strong><small style="color:var(--muted);">Time Complexity</small></div>
         </span>
     </div>
     
-    <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card glass-card reveal" style="margin-bottom:1.5rem;">
         <canvas id="selectionSortChart" height="120"></canvas>
     </div>
     
     <div class="station-grid" style="grid-template-columns:repeat(3,1fr);">
         {% for result in sort_results %}
-        <div class="station-card">
+        <div class="station-card glass-card reveal">
             <div class="distance-row"><span>n = {{ result.n }}</span><strong>{{ result.time_ms }} ms</strong></div>
             <small style="color:var(--muted);">Comparisons: {{ result.comparisons }}</small>
         </div>
         {% endfor %}
     </div>
 </section>
+
+</div>
 
 {% endblock %}
 
@@ -80,8 +87,8 @@
             datasets: [{
                 label: 'Execution Time (ms)',
                 data: {{ linear_results | map(attribute='time_ms') | list | tojson }},
-                borderColor: '#00d4ff',
-                backgroundColor: 'rgba(0,212,255,0.1)',
+                borderColor: '#06ffa5',
+                backgroundColor: 'rgba(6,255,165,0.1)',
                 fill: true,
                 tension: 0.4
             }]
@@ -89,11 +96,11 @@
         options: {
             responsive: true,
             plugins: {
-                legend: { labels: { color: '#f0f4f8' } }
+                legend: { labels: { color: '#fff' } }
             },
             scales: {
-                x: { ticks: { color: '#8b98a9' }, title: { display: true, text: 'Input Size (n)', color: '#8b98a9' } },
-                y: { ticks: { color: '#8b98a9' }, title: { display: true, text: 'Time (ms)', color: '#8b98a9' } }
+                x: { ticks: { color: 'rgba(255,255,255,0.6)' }, title: { display: true, text: 'Input Size (n)', color: 'rgba(255,255,255,0.6)' } },
+                y: { ticks: { color: 'rgba(255,255,255,0.6)' }, title: { display: true, text: 'Time (ms)', color: 'rgba(255,255,255,0.6)' } }
             }
         }
     });
@@ -107,8 +114,8 @@
             datasets: [{
                 label: 'Execution Time (ms)',
                 data: {{ sort_results | map(attribute='time_ms') | list | tojson }},
-                borderColor: '#00ff88',
-                backgroundColor: 'rgba(0,255,136,0.1)',
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139,92,246,0.1)',
                 fill: true,
                 tension: 0.4
             }]
@@ -116,11 +123,11 @@
         options: {
             responsive: true,
             plugins: {
-                legend: { labels: { color: '#f0f4f8' } }
+                legend: { labels: { color: '#fff' } }
             },
             scales: {
-                x: { ticks: { color: '#8b98a9' }, title: { display: true, text: 'Input Size (n)', color: '#8b98a9' } },
-                y: { ticks: { color: '#8b98a9' }, title: { display: true, text: 'Time (ms)', color: '#8b98a9' } }
+                x: { ticks: { color: 'rgba(255,255,255,0.6)' }, title: { display: true, text: 'Input Size (n)', color: 'rgba(255,255,255,0.6)' } },
+                y: { ticks: { color: 'rgba(255,255,255,0.6)' }, title: { display: true, text: 'Time (ms)', color: 'rgba(255,255,255,0.6)' } }
             }
         }
     });

@@ -2,17 +2,22 @@
 {% block title %}Recommended Stations | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">SMART MATCH</div>
-        <h1>Recommended <span>for you.</span></h1>
+        <h1>Recommended <span class="gradient-text">for you.</span></h1>
         <p>Smart recommendations based on distance, availability, rating{% if user_connector %} and your {{ user_connector }} connector{% endif %}.</p>
     </div>
     <a class="btn btn-outline" href="{{ url_for('stations') }}">View all stations</a>
 </section>
 
 {% if user_vehicle %}
-<div class="dashboard-callout" style="margin-bottom:1.5rem;">
+<div class="dashboard-callout glass-card reveal" style="margin-bottom:1.5rem;">
     <div class="callout-icon">🚗</div>
     <div>
         <span class="card-kicker">YOUR VEHICLE</span>
@@ -22,7 +27,7 @@
     <a class="btn btn-outline btn-sm" href="{{ url_for('vehicle_profile') }}">Edit vehicle</a>
 </div>
 {% else %}
-<div class="dashboard-callout" style="margin-bottom:1.5rem;">
+<div class="dashboard-callout glass-card reveal" style="margin-bottom:1.5rem;">
     <div class="callout-icon">⚡</div>
     <div>
         <span class="card-kicker">TIP</span>
@@ -35,11 +40,11 @@
 
 <section class="station-grid">
     {% for station in recommendations %}
-    <article class="station-card">
+    <article class="station-card glass-card reveal">
         <div class="station-card-top">
             <span class="station-id">ID {{ station.station_id }}</span>
             <div style="display:flex;gap:0.5rem;align-items:center;">
-                <span style="background:rgba(0,255,136,0.1);color:var(--success);border:1px solid rgba(0,255,136,0.3);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.75rem;font-weight:600;">★ {{ station.recommendation_score }}% match</span>
+                <span style="background:rgba(6,255,165,0.1);color:var(--primary);border:1px solid rgba(6,255,165,0.3);border-radius:20px;padding:0.25rem 0.75rem;font-size:0.75rem;font-weight:600;">★ {{ station.recommendation_score }}% match</span>
                 {% if station.available_slots > 0 %}
                     <span class="status available-status"><i></i> Available</span>
                 {% else %}
@@ -82,12 +87,14 @@
         </a>
     </article>
     {% else %}
-    <div class="empty-state">
+    <div class="empty-state glass-card reveal">
         <span class="empty-icon">⚡</span>
         <h2>No recommendations available</h2>
         <p>Try adding more stations or check back later.</p>
     </div>
     {% endfor %}
 </section>
+
+</div>
 
 {% endblock %}

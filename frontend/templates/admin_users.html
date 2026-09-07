@@ -2,10 +2,15 @@
 {% block title %}Manage Users | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
-        <h1>Manage <span>Users</span></h1>
+        <h1>Manage <span class="gradient-text">Users</span></h1>
         <p>All registered users.</p>
     </div>
     <a class="btn btn-outline" href="{{ url_for('admin_dashboard') }}">← Back to admin</a>
@@ -13,7 +18,7 @@
 
 <div class="station-grid">
     {% for user in users %}
-    <article class="station-card">
+    <article class="station-card glass-card reveal">
         <div class="station-card-title">
             <div class="station-emblem">👤</div>
             <div>
@@ -34,12 +39,14 @@
         {% endif %}
     </article>
     {% else %}
-    <div class="empty-state">
+    <div class="empty-state glass-card">
         <span class="empty-icon">👤</span>
         <h2>No users found</h2>
         <p>Users will appear here when they register.</p>
     </div>
     {% endfor %}
+</div>
+
 </div>
 
 {% endblock %}

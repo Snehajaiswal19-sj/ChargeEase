@@ -2,16 +2,22 @@
 {% block title %}Dashboard | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="dashboard-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<!-- Dashboard Content -->
+<div class="page-enter">
+
+<section class="dashboard-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">WELCOME BACK</div>
-        <h1>Good to see you,<br><span>{{ session.get("user_name", "User") }}</span>.</h1>
+        <h1>Good to see you,<br><span class="gradient-text">{{ session.get("user_name", "User") }}</span>.</h1>
         <p>Everything you need for your next charging stop, in one place.</p>
     </div>
-    <a class="btn btn-primary btn-lg" href="{{ url_for('stations') }}">Find a station</a>
+    <a class="btn btn-neon btn-lg" href="{{ url_for('stations') }}">Find a station</a>
 </section>
 
-<section class="dashboard-callout">
+<section class="dashboard-callout glass-card reveal">
     <div class="callout-icon">🚗</div>
     <div>
         <span class="card-kicker">MY VEHICLE</span>
@@ -26,7 +32,7 @@
     <a class="btn btn-outline" href="{{ url_for('vehicle_profile') }}">{{ "Edit vehicle" if vehicle else "Add vehicle" }}</a>
 </section>
 
-<section class="dashboard-callout">
+<section class="dashboard-callout glass-card reveal">
     <div class="callout-icon">📍</div>
     <div>
         <span class="card-kicker">NEARBY STATIONS</span>
@@ -38,7 +44,7 @@
 
 <div id="nearby-results" class="stat-grid" style="display:none;"></div>
 
-<section class="dashboard-callout">
+<section class="dashboard-callout glass-card reveal">
     <div class="callout-icon">⌕</div>
     <div>
         <span class="card-kicker">STATION SEARCH</span>
@@ -49,7 +55,7 @@
 </section>
 
 {% if favorite_stations %}
-<section class="dashboard-section">
+<section class="dashboard-section reveal">
     <div class="section-intro compact">
         <div><h2>Your Favorite Stations</h2></div>
         <a class="btn btn-outline btn-sm" href="{{ url_for('favorites') }}">View all</a>
@@ -57,7 +63,7 @@
     
     <div class="station-grid">
         {% for station in favorite_stations[:3] %}
-        <article class="station-card">
+        <article class="station-card glass-card">
             <div class="station-card-top">
                 <span class="station-id">ID {{ station.station_id }}</span>
                 {% if station.available_slots > 0 %}
@@ -81,16 +87,16 @@
 </section>
 {% endif %}
 
-<section class="stat-grid">
-    <article class="stat-card">
+<section class="stat-grid reveal">
+    <article class="stat-card glass-card">
         <span class="stat-icon">⚡</span>
         <div><span class="stat-label">Charging network</span><strong>Live</strong><small>Station data from MongoDB</small></div>
     </article>
-    <article class="stat-card">
+    <article class="stat-card glass-card">
         <span class="stat-icon">↗</span>
         <div><span class="stat-label">Distance sorting</span><strong>C powered</strong><small>Selection Sort integration</small></div>
     </article>
-    <article class="stat-card">
+    <article class="stat-card glass-card">
         <span class="stat-icon">◉</span>
         <div><span class="stat-label">Station search</span><strong>Live</strong><small>C Linear Search + Flask</small></div>
     </article>
@@ -102,62 +108,46 @@
     </div>
 
     <div class="action-grid">
-        <a class="action-card" href="{{ url_for('recommendations') }}">
+        <a class="action-card glass-card reveal" href="{{ url_for('recommendations') }}">
             <span class="action-icon">★</span>
             <h3>Recommended stations</h3>
             <p>Get personalized recommendations based on distance, availability, and rating.</p>
             <span class="action-arrow">↗</span>
         </a>
-        <a class="action-card" href="{{ url_for('cost_estimator') }}">
+        <a class="action-card glass-card reveal" href="{{ url_for('cost_estimator') }}">
             <span class="action-icon">💰</span>
             <h3>Charging cost estimator</h3>
             <p>Estimate charging time and cost based on your battery and charger power.</p>
             <span class="action-arrow">↗</span>
         </a>
-        <a class="action-card" href="{{ url_for('range_calculator') }}">
+        <a class="action-card glass-card reveal" href="{{ url_for('range_calculator') }}">
             <span class="action-icon">📏</span>
             <h3>EV range calculator</h3>
             <p>Find out how far you can go with your current battery level.</p>
             <span class="action-arrow">↗</span>
         </a>
-        <a class="action-card" href="{{ url_for('stations') }}">
+        <a class="action-card glass-card reveal" href="{{ url_for('stations') }}">
             <span class="action-icon">⌕</span>
             <h3>Find charging stations</h3>
             <p>Explore stations, compare availability and open detailed station information.</p>
             <span class="action-arrow">↗</span>
         </a>
-        <a class="action-card" href="{{ url_for('favorites') }}">
+        <a class="action-card glass-card reveal" href="{{ url_for('favorites') }}">
             <span class="action-icon">★</span>
             <h3>My favorites</h3>
             <p>Access your frequently used stations quickly.</p>
             <span class="action-arrow">↗</span>
         </a>
-        <a class="action-card" href="{{ url_for('bookings') }}">
+        <a class="action-card glass-card reveal" href="{{ url_for('bookings') }}">
             <span class="action-icon">▤</span>
             <h3>My bookings</h3>
             <p>Review the charging slots you have already reserved.</p>
             <span class="action-arrow">↗</span>
         </a>
-        <a class="action-card" href="{{ url_for('benchmark') }}">
-            <span class="action-icon">📊</span>
-            <h3>DSA Benchmarking</h3>
-            <p>See real performance data of Linear Search & Selection Sort.</p>
-            <span class="action-arrow">↗</span>
-        </a>
-        <a class="action-card" href="{{ url_for('station_map') }}">
-            <span class="action-icon">🗺️</span>
-            <h3>Station Map</h3>
-            <p>Explore all charging stations on an interactive map.</p>
-            <span class="action-arrow">↗</span>
-        </a>
-        <a class="action-card" href="{{ url_for('about') }}">
-            <span class="action-icon">ℹ️</span>
-            <h3>About ChargeEase</h3>
-            <p>Learn how ChargeEase works and what makes it unique.</p>
-            <span class="action-arrow">↗</span>
-        </a>
     </div>
 </section>
+
+</div>
 
 {% endblock %}
 
@@ -189,7 +179,7 @@
                 }
 
                 resultsEl.innerHTML = data.stations.slice(0, 3).map(s => `
-                    <article class="stat-card">
+                    <article class="stat-card glass-card">
                         <span class="stat-icon">⚡</span>
                         <div>
                             <span class="stat-label">${s.name}</span>

@@ -2,18 +2,23 @@
 {% block title %}Manage Bookings | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
-        <h1>Manage <span>Bookings</span></h1>
+        <h1>Manage <span class="gradient-text">Bookings</span></h1>
         <p>All bookings across the platform.</p>
     </div>
     <a class="btn btn-outline" href="{{ url_for('admin_dashboard') }}">← Back to admin</a>
 </section>
 
-<div class="booking-container" style="display:grid;gap:1rem;">
+<div class="booking-container">
     {% for booking in bookings %}
-    <article class="booking-card">
+    <article class="booking-card glass-card reveal">
         <div class="booking-main">
             <div class="booking-station-icon">⚡</div>
             <div>
@@ -30,12 +35,14 @@
         </div>
     </article>
     {% else %}
-    <div class="empty-state">
+    <div class="empty-state glass-card">
         <span class="empty-icon">▤</span>
         <h2>No bookings found</h2>
         <p>Bookings will appear here when users reserve slots.</p>
     </div>
     {% endfor %}
+</div>
+
 </div>
 
 {% endblock %}

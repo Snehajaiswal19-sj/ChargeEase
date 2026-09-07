@@ -2,7 +2,14 @@
 {% block title %}{{ station.name }} | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="detail-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<a class="back-link" href="{{ url_for('stations') }}">← Back to stations</a>
+
+<section class="detail-hero reveal">
     <div>
         <div class="station-id" style="margin-bottom:1rem;">STATION ID {{ station.station_id }}</div>
         <h1>{{ station.name }}</h1>
@@ -23,7 +30,7 @@
         {% if is_favorite %}
         <form method="POST" action="{{ url_for('remove_favorite', station_id=station.station_id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="btn btn-outline btn-sm" style="color:var(--warning);">★ Remove from favorites</button>
+            <button type="submit" class="btn btn-outline btn-sm" style="color:var(--primary);">★ Remove from favorites</button>
         </form>
         {% else %}
         <form method="POST" action="{{ url_for('add_favorite', station_id=station.station_id) }}">
@@ -39,7 +46,7 @@
 {% endif %}
 
 <section class="station-detail-layout">
-    <div class="detail-main-card">
+    <div class="detail-main-card glass-card reveal">
         <div class="detail-card-top">
             <div class="detail-symbol">⚡</div>
             <div>
@@ -74,7 +81,7 @@
         </div>
     </div>
 
-    <aside class="detail-side-card">
+    <aside class="detail-side-card glass-card reveal">
         <span class="card-kicker">NEXT STEP</span>
         <h2 style="font-size:1.5rem;">Ready to charge?</h2>
         <p style="color:var(--muted);">Reserve a slot while availability is still open.</p>
@@ -107,7 +114,7 @@
     </div>
 
     {% if can_review %}
-    <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card glass-card reveal" style="margin-bottom:1.5rem;">
         <p><strong>{{ "Update your review" if my_review else "Rate this station" }}</strong></p>
         <form method="POST" action="{{ url_for('submit_review', station_id=station.station_id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -128,10 +135,10 @@
     {% if reviews %}
         <div class="reviews-list">
             {% for r in reviews %}
-            <div class="card" style="margin-bottom:1rem;">
+            <div class="card glass-card" style="margin-bottom:1rem;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
                     <strong>{{ r.user_name }}</strong>
-                    <span style="color:var(--warning);">{{ "★" * r.rating }}{{ "☆" * (5 - r.rating) }}</span>
+                    <span style="color:var(--primary);">{{ "★" * r.rating }}{{ "☆" * (5 - r.rating) }}</span>
                 </div>
                 {% if r.review_text %}<p style="color:var(--text-soft);">{{ r.review_text }}</p>{% endif %}
                 <small style="color:var(--muted);">{{ r.created_at.strftime("%d %b %Y") }}</small>
@@ -142,6 +149,8 @@
         <p style="color:var(--muted);font-size:0.875rem;">No reviews yet — be the first to share your experience.</p>
     {% endif %}
 </section>
+
+</div>
 
 {% endblock %}
 

@@ -2,107 +2,110 @@
 {% block title %}ChargeEase | Premium EV Charging{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
 <style>
-  .navbar { display: none; }
-  .site-footer { display: none; }
+    .navbar { display: none !important; }
+    .site-footer { display: none !important; }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- Cinematic Hero - Homepage -->
-<div class="scroll-hero">
-  
-  <!-- Photo Background (Fixed, Cinematic) -->
-  <div class="hero-bg">
-    <img src="{{ url_for('static', filename='images/ev-station-1.jpg') }}" alt="EV Charging Station">
-  </div>
-  
-  <!-- Gradient Overlay -->
-  <div class="hero-overlay"></div>
-  
-  <!-- Scroll Progress -->
-  <div class="scroll-progress"></div>
-  
-  <!-- Navigation -->
-  <nav class="hero-nav">
-    <div class="hero-nav-logo">⚡ CHARGEASE</div>
-    <div class="hero-nav-menu">
-      <a href="#hero" class="active">Home</a>
-      <a href="#about">About</a>
-      <a href="#features">Features</a>
-      <a href="#cta">Get Started</a>
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<!-- Hero Section -->
+<section class="hero-section" style="padding: 6rem 0 4rem; text-align: center;">
+    <div class="reveal">
+        <div class="card-kicker" style="margin-bottom: 1rem;">⚡ SMART CHARGING PLATFORM</div>
+        <h1 style="font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; margin-bottom: 0.5rem; color: #fff;">
+            <span class="gradient-text">ChargeEase</span>
+        </h1>
+        <h2 style="font-size: clamp(1.5rem, 4vw, 2.5rem); color: #fff; margin-bottom: 1rem;">Beyond Charging</h2>
+        <p style="font-size: clamp(1rem, 2vw, 1.25rem); color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto 2rem;">
+            Find, compare, and book EV charging stations with ease
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem;">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #06ffa5, #8b5cf6); color: #fff; padding: 1rem 2rem; border-radius: 12px; font-weight: 700;">Get Started</a>
+            <a href="{{ url_for('stations') }}" class="btn btn-outline btn-lg" style="padding: 1rem 2rem; border-radius: 12px; font-weight: 700; color: #fff; border: 2px solid rgba(255,255,255,0.3);">Find Stations</a>
+        </div>
     </div>
-  </nav>
-  
-  <!-- Sections -->
-  <div class="hero-sections">
-    <section class="hero-section" id="hero">
-      <div class="section-content">
-        <h1 class="section-headline">ChargeEase</h1>
-        <h2 class="section-subheadline">Beyond Charging</h2>
-        <p class="section-body">Find, compare, and book EV charging stations with ease</p>
-        <div style="margin-top:2rem;">
-          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #06ffa5, #8b5cf6); color: #000; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; text-decoration: none;">Get Started</a>
-          <a href="{{ url_for('stations') }}" class="btn btn-outline btn-lg" style="padding: 1rem 2rem; border-radius: 12px; font-weight: 700; text-decoration: none; color: #fff; border: 2px solid rgba(255,255,255,0.3);">Find Stations</a>
+</section>
+
+<!-- Features Section -->
+<section class="dashboard-section" style="padding: 4rem 0;">
+    <div class="section-intro reveal">
+        <div>
+            <div class="card-kicker" style="margin-bottom: 0.5rem;">WHY CHARGEASE</div>
+            <h2 style="color: #fff;">Everything you need<br><span class="gradient-text">before you plug in.</span></h2>
         </div>
-      </div>
-    </section>
-    
-    <section class="hero-section" id="about">
-      <div class="section-content">
-        <h1 class="section-headline">Innovation</h1>
-        <h2 class="section-subheadline">Through Design</h2>
-        <p class="section-body">Our platform combines real-time data, smart algorithms, and premium design to make EV charging effortless</p>
-      </div>
-    </section>
-    
-    <section class="hero-section" id="features">
-      <div class="section-content">
-        <h1 class="section-headline">Features</h1>
-        <h2 class="section-subheadline">Everything You Need</h2>
-        <p class="section-body">Real stations, live availability, smart recommendations, cost estimation, and more</p>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;max-width:600px;margin-left:auto;margin-right:auto;">
-          <div style="background:rgba(255,255,255,0.1);padding:1rem;border-radius:12px;backdrop-filter:blur(10px);">
-            <div style="font-size:2rem;margin-bottom:0.5rem;">⚡</div>
-            <strong style="color:#fff;display:block;">Real Stations</strong>
-            <small style="color:rgba(255,255,255,0.7);">Live data from Open Charge Map</small>
-          </div>
-          <div style="background:rgba(255,255,255,0.1);padding:1rem;border-radius:12px;backdrop-filter:blur(10px);">
-            <div style="font-size:2rem;margin-bottom:0.5rem;">🧠</div>
-            <strong style="color:#fff;display:block;">Smart Picks</strong>
-            <small style="color:rgba(255,255,255,0.7);">Personalized recommendations</small>
-          </div>
-          <div style="background:rgba(255,255,255,0.1);padding:1rem;border-radius:12px;backdrop-filter:blur(10px);">
-            <div style="font-size:2rem;margin-bottom:0.5rem;">💰</div>
-            <strong style="color:#fff;display:block;">Cost Estimator</strong>
-            <small style="color:rgba(255,255,255,0.7);">Calculate charging costs</small>
-          </div>
+        <p style="color: rgba(255,255,255,0.8);">One calm, focused interface for finding stations, checking capacity and managing your charging plans.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+        <article class="card glass-card action-card reveal">
+            <span class="action-icon">⌕</span>
+            <h3 style="color: #fff;">Search smarter</h3>
+            <p style="color: rgba(255,255,255,0.8);">Find stations by ID, name or location with live search connected to the application backend.</p>
+        </article>
+        <article class="card glass-card action-card reveal">
+            <span class="action-icon">◉</span>
+            <h3 style="color: #fff;">Know before you go</h3>
+            <p style="color: rgba(255,255,255,0.8);">See available slots, total capacity, waiting vehicles, charger type and distance at a glance.</p>
+        </article>
+        <article class="card glass-card action-card reveal">
+            <span class="action-icon">↗</span>
+            <h3 style="color: #fff;">Reserve with ease</h3>
+            <p style="color: rgba(255,255,255,0.8);">Open a station, review its availability and reserve a charging slot through the existing booking flow.</p>
+        </article>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="dashboard-section" style="padding: 4rem 0;">
+    <div class="section-intro reveal">
+        <div><h2 style="color: #fff;">How <span class="gradient-text">ChargeEase</span> works</h2></div>
+        <p style="color: rgba(255,255,255,0.8);">A simple 4-step flow from search to charge.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+        <div class="card glass-card action-card reveal">
+            <span class="action-icon">⌕</span>
+            <span class="card-kicker">STEP 01</span>
+            <h3 style="color: #fff;">Search</h3>
+            <p style="color: rgba(255,255,255,0.8);">By station ID, name, or location — or find real-world chargers nearby.</p>
         </div>
-      </div>
-    </section>
-    
-    <section class="hero-section" id="cta">
-      <div class="section-content">
-        <h1 class="section-headline">Get Started</h1>
-        <h2 class="section-subheadline">Join ChargeEase Today</h2>
-        <p class="section-body">Create your free account and start finding charging stations near you</p>
-        <div style="margin-top:2rem;">
-          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #06ffa5, #8b5cf6); color: #000; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; text-decoration: none;">Create Account</a>
+        <div class="card glass-card action-card reveal">
+            <span class="action-icon">🗺️</span>
+            <span class="card-kicker">STEP 02</span>
+            <h3 style="color: #fff;">Explore</h3>
+            <p style="color: rgba(255,255,255,0.8);">Compare distance, charger type, live availability & ratings.</p>
         </div>
-      </div>
-    </section>
-  </div>
-  
-  <!-- Loading -->
-  <div class="loading-overlay">
-    <div class="loading-text">Loading</div>
-  </div>
+        <div class="card glass-card action-card reveal">
+            <span class="action-icon">⚡</span>
+            <span class="card-kicker">STEP 03</span>
+            <h3 style="color: #fff;">Select</h3>
+            <p style="color: rgba(255,255,255,0.8);">Open a station to see full details, slots & waiting queue.</p>
+        </div>
+        <div class="card glass-card action-card reveal">
+            <span class="action-icon">↗</span>
+            <span class="card-kicker">STEP 04</span>
+            <h3 style="color: #fff;">Reserve</h3>
+            <p style="color: rgba(255,255,255,0.8);">Book your slot instantly — get notified by app & email.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="dashboard-section" style="padding: 4rem 0;">
+    <div class="card glass-card reveal" style="padding: 3rem; text-align: center;">
+        <h2 style="color: #fff; margin-bottom: 1rem;">Ready to <span class="gradient-text">charge</span>?</h2>
+        <p style="color: rgba(255,255,255,0.8); margin-bottom: 2rem;">Create your free account and start finding charging stations near you</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #06ffa5, #8b5cf6); color: #fff; padding: 1rem 2rem; border-radius: 12px; font-weight: 700;">Get Started</a>
+    </div>
+</section>
+
 </div>
 
-{% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/hero.js') }}"></script>
 {% endblock %}

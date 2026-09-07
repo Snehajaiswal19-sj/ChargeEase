@@ -2,19 +2,24 @@
 {% block title %}My Bookings | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">MANAGE</div>
-        <h1>My <span>bookings</span></h1>
+        <h1>My <span class="gradient-text">bookings</span></h1>
         <p>Keep track of the charging slots you have reserved.</p>
     </div>
     <a class="btn btn-outline" href="{{ url_for('stations') }}">Find another station</a>
 </section>
 
 {% if bookings %}
-    <div class="booking-container" style="display:grid;gap:1rem;">
+    <div class="booking-container">
         {% for booking in bookings %}
-        <article class="booking-card">
+        <article class="booking-card glass-card reveal">
             <div class="booking-main">
                 <div class="booking-station-icon">⚡</div>
                 <div>
@@ -43,12 +48,14 @@
         {% endfor %}
     </div>
 {% else %}
-    <section class="empty-state">
+    <section class="empty-state glass-card reveal">
         <span class="empty-icon">⚡</span>
         <h2>Your next charging stop is waiting.</h2>
         <p>Explore the station network and reserve a slot when you're ready.</p>
         <a href="{{ url_for('stations') }}" class="btn btn-primary btn-lg">Find charging stations</a>
     </section>
 {% endif %}
+
+</div>
 
 {% endblock %}

@@ -3,26 +3,62 @@
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 <style>
     #station-map {
         width: 100%;
-        height: 520px;
+        height: 500px;
         border-radius: 16px;
         margin-top: 1.5rem;
         border: 1px solid var(--line);
+        z-index: 1;
+        position: relative;
     }
+    
+    .leaflet-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 16px;
+        z-index: 1;
+    }
+    
+    .leaflet-tile-pane {
+        z-index: 1;
+    }
+    
+    .leaflet-overlay-pane {
+        z-index: 2;
+    }
+    
+    .leaflet-popup-content {
+        color: #000;
+        font-size: 0.875rem;
+    }
+    
+    .leaflet-routing-container {
+        background: rgba(10,10,10,0.9);
+        color: #fff;
+        border-radius: 12px;
+        padding: 1rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .leaflet-routing-alt h2, .leaflet-routing-alt h3 {
+        color: #fff;
+    }
+    
     .map-legend {
         display: flex;
         gap: 1.5rem;
         flex-wrap: wrap;
         margin-top: 1rem;
         padding: 1rem;
-        background: var(--panel);
-        border-radius: var(--radius);
-        border: 1px solid var(--line);
-        font-size: 0.875rem;
+        background: rgba(10,10,10,0.8);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
     }
+    
     .legend-dot {
         width: 10px;
         height: 10px;
@@ -30,28 +66,20 @@
         display: inline-block;
         margin-right: 0.5rem;
     }
-    .leaflet-routing-container {
-        background: var(--panel);
-        color: var(--text);
-        border-radius: 12px;
-        border: 1px solid var(--line);
-        max-height: 340px;
-        overflow-y: auto;
-        font-size: 0.875rem;
-    }
-    #directions-clear {
-        display: none;
-        margin-top: 1rem;
-    }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">INTERACTIVE MAP</div>
-        <h1>Charging stations <span>near you</span></h1>
+        <h1>Charging stations <span class="gradient-text">near you</span></h1>
         <p>
             {% if user_connector %}
                 Stations matching your saved connector (<strong>{{ user_connector }}</strong>) are highlighted in green.
@@ -66,14 +94,16 @@
 <div id="station-map"></div>
 
 <div class="map-legend">
-    <span><span class="legend-dot" style="background:#00ff88;"></span> Compatible connector</span>
+    <span><span class="legend-dot" style="background:#06ffa5;"></span> Compatible connector</span>
     <span><span class="legend-dot" style="background:#00d4ff;"></span> Other ChargeEase stations</span>
     <span><span class="legend-dot" style="background:#ffb020;"></span> Nearby real-world chargers</span>
     <span><span class="legend-dot" style="background:#ff4757;"></span> Your location</span>
 </div>
 
-<p id="nearby-chargers-status" style="margin-top:1rem;color:var(--muted);font-size:0.875rem;">Loading nearby real-world chargers...</p>
+<p id="nearby-chargers-status" style="margin-top:1rem;color:rgba(255,255,255,0.6);font-size:0.875rem;">Loading nearby real-world chargers...</p>
 <button type="button" class="btn btn-outline btn-sm" id="directions-clear">Clear directions</button>
+
+</div>
 
 {% endblock %}
 
@@ -85,9 +115,11 @@
     const userConnector = {{ user_connector | tojson }};
 
     const map = L.map('station-map').setView([19.076, 72.877], 11);
+    
+    // Standard OSM Tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; OpenStreetMap contributors'
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
     let lastKnownUserLocation = null;
@@ -117,7 +149,7 @@
                 L.latLng(destLat, destLng)
             ],
             router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
-            lineOptions: { styles: [{ color: '#00d4ff', weight: 5, opacity: 0.85 }] },
+            lineOptions: { styles: [{ color: '#06ffa5', weight: 5, opacity: 0.85 }] },
             addWaypoints: false,
             draggableWaypoints: false,
             fitSelectedRoutes: true,
@@ -136,7 +168,7 @@
 
     stations.forEach(station => {
         const isCompatible = userConnector && station.connector_type === userConnector;
-        const color = isCompatible ? '#00ff88' : '#00d4ff';
+        const color = isCompatible ? '#06ffa5' : '#00d4ff';
 
         const marker = L.circleMarker([station.latitude, station.longitude], {
             radius: 9,
@@ -151,8 +183,8 @@
             `${station.location}<br>` +
             `Connector: ${station.connector_type || 'N/A'}<br>` +
             `Slots: ${station.available_slots}/${station.total_slots}<br>` +
-            `<a href="/station/${station.station_id}" style="color:#00d4ff;">View station</a><br>` +
-            `<a href="#" onclick="getDirections(${station.latitude},${station.longitude});return false;" style="color:#00d4ff;">Get directions</a>`
+            `<a href="/station/${station.station_id}" style="color:#06ffa5;">View station</a><br>` +
+            `<a href="#" onclick="getDirections(${station.latitude},${station.longitude});return false;" style="color:#06ffa5;">Get directions</a>`
         );
     });
 
@@ -225,7 +257,7 @@
         });
     });
 
-    // Show real-world stations immediately on page load, around the default map center.
+    // Show real-world stations immediately on page load
     loadNearbyChargers(19.076, 72.877);
 
     // If arriving from a station's "Get directions" link, auto-draw the route.

@@ -2,19 +2,24 @@
 {% block title %}Find Stations | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="stations-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="stations-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">DISCOVER</div>
-        <h1>Find a station<br><span>that fits your route.</span></h1>
+        <h1>Find a station<br><span class="gradient-text">that fits your route.</span></h1>
         <p>Search by station ID, name or location. Results stay connected to your live station data.</p>
     </div>
-    <div style="display:flex;align-items:center;gap:0.75rem;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem;">
-        <span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;animation:pulse 2s infinite;"></span>
+    <div class="network-badge glass-card" style="display:flex;align-items:center;gap:0.75rem;padding:1rem;border-radius:12px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--primary);display:inline-block;animation:pulse 2s infinite;"></span>
         <div><strong style="display:block;">Network online</strong><small style="color:var(--muted);">Live MongoDB station data</small></div>
     </div>
 </section>
 
-<section class="station-search-box">
+<section class="station-search-box reveal">
     <div class="search-input-wrapper">
         <span class="search-icon">⌕</span>
         <input type="text" id="stationSearch" placeholder="Search by station ID, name or location..." autocomplete="off">
@@ -30,7 +35,7 @@
     </label>
 </section>
 
-<form method="GET" action="{{ url_for('stations') }}" class="advanced-filters">
+<form method="GET" action="{{ url_for('stations') }}" class="advanced-filters reveal">
     <div class="filter-field">
         <label for="charger_type">Charger type</label>
         <select name="charger_type" id="charger_type">
@@ -95,11 +100,7 @@
 
 <section class="station-grid" id="stationGrid" style="padding-top:1.5rem;">
     {% for station in stations %}
-    <article class="station-card"
-        data-name="{{ station.name|lower }}"
-        data-location="{{ station.location|lower }}"
-        data-charger="{{ station.charger_type|lower }}">
-
+    <article class="station-card glass-card reveal" data-name="{{ station.name|lower }}" data-location="{{ station.location|lower }}" data-charger="{{ station.charger_type|lower }}">
         <div class="station-card-top">
             <span class="station-id">ID {{ station.station_id }}</span>
             {% if station.available_slots > 0 %}
@@ -108,7 +109,6 @@
                 <span class="status full-status"><i></i> Full</span>
             {% endif %}
         </div>
-
         <div class="station-card-title">
             <div class="station-emblem">⚡</div>
             <div>
@@ -121,26 +121,21 @@
                 {% endif %}
             </div>
         </div>
-
         <div class="distance-row"><span>Distance</span><strong>{{ "%.1f"|format(station.distance) }} km</strong></div>
-
         <div class="station-details">
             <div><strong>{{ station.available_slots }}</strong><small>Available</small></div>
             <div><strong>{{ station.total_slots }}</strong><small>Total slots</small></div>
             <div><strong>{{ station.waiting_vehicles }}</strong><small>Waiting</small></div>
         </div>
-
         <div class="charger-row">
             <span class="charger-label">CHARGER</span>
             <span class="charger-type{% if 'fast' in station.charger_type|lower %} charger-type-fast{% endif %}">⚡ {{ station.charger_type|capitalize }}</span>
         </div>
-
         {% if station.is_favorite %}
         <div style="margin-bottom:0.5rem;">
-            <span style="color:var(--warning);font-size:0.875rem;">★ Favorite</span>
+            <span style="color:var(--primary);font-size:0.875rem;">★ Favorite</span>
         </div>
         {% endif %}
-
         <a href="{{ url_for('station_details', station_id=station.station_id) }}" class="station-view-btn">
             <span>View station</span><b>↗</b>
         </a>
@@ -161,6 +156,8 @@
     </div>
     <section class="station-grid" id="externalGrid"></section>
 </section>
+
+</div>
 
 {% endblock %}
 
@@ -280,9 +277,9 @@ function renderExternalResults(chargers) {
     }
 
     grid.innerHTML = chargers.map(c => `
-        <article class="station-card">
+        <article class="station-card glass-card">
             <div class="station-card-top">
-                <span class="station-id" style="background:rgba(255,176,32,0.1);color:var(--warning);">🌐 Real-world</span>
+                <span class="station-id" style="background:rgba(255,176,32,0.1);color:#ffb020;">🌐 Real-world</span>
             </div>
             <div class="station-card-title">
                 <div class="station-emblem">⚡</div>

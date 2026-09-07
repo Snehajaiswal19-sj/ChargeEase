@@ -2,45 +2,45 @@
 {% block title %}About ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">OUR MISSION</div>
-        <h1>Making EV charging simple,<br><span>convenient & stress-free.</span></h1>
-        <p>
-            ChargeEase helps electric vehicle users find the right charging station,
-            check availability, and reserve a slot — all in one place.
-        </p>
+        <h1>Making EV charging simple,<br><span class="gradient-text">convenient & stress-free.</span></h1>
+        <p>ChargeEase helps electric vehicle users find the right charging station, check availability, and reserve a slot — all in one place.</p>
     </div>
 </section>
 
 <section class="dashboard-section">
     <div class="section-intro">
-        <div>
-            <h2>How ChargeEase works</h2>
-        </div>
+        <div><h2>How ChargeEase works</h2></div>
         <p>A simple 4-step flow from search to charge.</p>
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;">
-        <div class="card action-card">
+        <div class="card glass-card action-card reveal">
             <span class="action-icon">⌕</span>
             <span class="card-kicker">STEP 01</span>
             <h3>Search</h3>
             <p>By station ID, name, or location — or find real-world chargers nearby.</p>
         </div>
-        <div class="card action-card">
+        <div class="card glass-card action-card reveal">
             <span class="action-icon">🗺️</span>
             <span class="card-kicker">STEP 02</span>
             <h3>Explore</h3>
             <p>Compare distance, charger type, live availability & ratings.</p>
         </div>
-        <div class="card action-card">
+        <div class="card glass-card action-card reveal">
             <span class="action-icon">⚡</span>
             <span class="card-kicker">STEP 03</span>
             <h3>Select</h3>
             <p>Open a station to see full details, slots & waiting queue.</p>
         </div>
-        <div class="card action-card">
+        <div class="card glass-card action-card reveal">
             <span class="action-icon">↗</span>
             <span class="card-kicker">STEP 04</span>
             <h3>Reserve</h3>
@@ -51,23 +51,21 @@
 
 <section class="dashboard-section">
     <div class="section-intro">
-        <div>
-            <h2>Why ChargeEase?</h2>
-        </div>
+        <div><h2>Why ChargeEase?</h2></div>
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
-        <div class="card action-card">
+        <div class="card glass-card action-card reveal">
             <span class="action-icon">⚡</span>
             <h3>Simple</h3>
             <p>A clean, straightforward way to discover charging stations — no unnecessary steps.</p>
         </div>
-        <div class="card action-card">
+        <div class="card glass-card action-card reveal">
             <span class="action-icon">📍</span>
             <h3>Convenient</h3>
             <p>Everything you need — location, availability, price, ratings — in one screen.</p>
         </div>
-        <div class="card action-card">
+        <div class="card glass-card action-card reveal">
             <span class="action-icon">🚗</span>
             <h3>User Focused</h3>
             <p>Built around how EV drivers actually search, decide, and book — start to finish.</p>
@@ -76,7 +74,7 @@
 </section>
 
 <section class="dashboard-section">
-    <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:2rem;">
+    <div class="card glass-card" style="display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:2rem;">
         <div>
             <h2 style="margin-bottom:0.5rem;">Find it. Check it. Charge it.</h2>
             <p style="color:var(--muted);margin:0;">Your EV charging journey, made easier.</p>
@@ -84,5 +82,7 @@
         <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}">Get Started</a>
     </div>
 </section>
+
+</div>
 
 {% endblock %}

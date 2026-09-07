@@ -2,10 +2,15 @@
 {% block title %}Admin Dashboard | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
-        <h1>Admin <span>Dashboard</span></h1>
+        <h1>Admin <span class="gradient-text">Dashboard</span></h1>
         <p>Overview of all ChargeEase activity.</p>
     </div>
     <div style="display:flex;gap:0.5rem;">
@@ -16,23 +21,23 @@
 </section>
 
 <section class="stat-grid">
-    <article class="stat-card">
+    <article class="stat-card glass-card reveal">
         <span class="stat-icon">👤</span>
         <div><span class="stat-label">Total Users</span><strong>{{ total_users }}</strong><small>Registered accounts</small></div>
     </article>
-    <article class="stat-card">
+    <article class="stat-card glass-card reveal">
         <span class="stat-icon">⚡</span>
         <div><span class="stat-label">Total Stations</span><strong>{{ total_stations }}</strong><small>Charging stations</small></div>
     </article>
-    <article class="stat-card">
+    <article class="stat-card glass-card reveal">
         <span class="stat-icon">▤</span>
         <div><span class="stat-label">Total Bookings</span><strong>{{ total_bookings }}</strong><small>All time</small></div>
     </article>
-    <article class="stat-card">
+    <article class="stat-card glass-card reveal">
         <span class="stat-icon">✓</span>
         <div><span class="stat-label">Active Bookings</span><strong>{{ active_bookings }}</strong><small>Currently reserved</small></div>
     </article>
-    <article class="stat-card">
+    <article class="stat-card glass-card reveal">
         <span class="stat-icon">★</span>
         <div><span class="stat-label">Total Reviews</span><strong>{{ total_reviews }}</strong><small>User feedback</small></div>
     </article>
@@ -44,9 +49,9 @@
         <a class="btn btn-outline btn-sm" href="{{ url_for('admin_bookings') }}">View all</a>
     </div>
 
-    <div class="booking-container" style="display:grid;gap:1rem;">
+    <div class="booking-container">
         {% for booking in recent_bookings %}
-        <article class="booking-card">
+        <article class="booking-card glass-card reveal">
             <div class="booking-main">
                 <div class="booking-station-icon">⚡</div>
                 <div>
@@ -63,7 +68,7 @@
             </div>
         </article>
         {% else %}
-        <div class="empty-state">
+        <div class="empty-state glass-card">
             <span class="empty-icon">▤</span>
             <h2>No bookings yet</h2>
             <p>Bookings will appear here when users reserve slots.</p>
@@ -80,7 +85,7 @@
 
     <div class="station-grid">
         {% for user in recent_users %}
-        <article class="station-card">
+        <article class="station-card glass-card reveal">
             <div class="station-card-title">
                 <div class="station-emblem">👤</div>
                 <div>
@@ -93,5 +98,7 @@
         {% endfor %}
     </div>
 </section>
+
+</div>
 
 {% endblock %}

@@ -2,7 +2,12 @@
 {% block title %}{{ charger.name }} | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-1.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="station-id" style="margin-bottom:1rem;">🌐 REAL-WORLD CHARGER</div>
         <h1>{{ charger.name }}</h1>
@@ -17,22 +22,22 @@
     </div>
 </section>
 
-<div class="flash success" style="margin-bottom:1.5rem;">
+<div class="flash success glass-card" style="margin-bottom:1.5rem;">
     <span class="flash-dot"></span>
     <span>This is a real-world charger from the Open Charge Map community database. Tap "Book this station" to reserve a slot the same way you would for any ChargeEase station.</span>
 </div>
 
 <section class="stat-grid">
-    <article class="stat-card">
+    <article class="stat-card glass-card reveal">
         <span class="stat-icon">⚡</span>
         <div><span class="stat-label">Operator</span><strong>{{ charger.operator }}</strong></div>
     </article>
-    <article class="stat-card">
+    <article class="stat-card glass-card reveal">
         <span class="stat-icon">▤</span>
         <div><span class="stat-label">Charging points</span><strong>{{ charger.num_points or "N/A" }}</strong></div>
     </article>
     {% if charger.last_verified %}
-    <article class="stat-card">
+    <article class="stat-card glass-card reveal">
         <span class="stat-icon">✓</span>
         <div><span class="stat-label">Status</span><strong>{{ charger.last_verified }}</strong></div>
     </article>
@@ -56,7 +61,7 @@
 {% endif %}
 
 {% if charger.usage_cost %}
-<section class="dashboard-callout">
+<section class="dashboard-callout glass-card reveal">
     <div class="callout-icon">₹</div>
     <div>
         <span class="card-kicker">USAGE COST</span>
@@ -67,7 +72,7 @@
 {% endif %}
 
 {% if charger.latitude and charger.longitude %}
-<section class="dashboard-callout">
+<section class="dashboard-callout glass-card reveal">
     <div class="callout-icon">📍</div>
     <div>
         <span class="card-kicker">LOCATION</span>
@@ -77,5 +82,7 @@
     <a class="btn btn-outline" href="https://www.openstreetmap.org/?mlat={{ charger.latitude }}&mlon={{ charger.longitude }}#map=17/{{ charger.latitude }}/{{ charger.longitude }}" target="_blank" rel="noopener">Open in maps</a>
 </section>
 {% endif %}
+
+</div>
 
 {% endblock %}

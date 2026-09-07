@@ -2,15 +2,20 @@
 {% block title %}Charging Cost Estimator | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">CALCULATE</div>
-        <h1>Cost <span>estimator</span></h1>
+        <h1>Cost <span class="gradient-text">estimator</span></h1>
         <p>Estimate charging time and cost based on your battery and charger power.</p>
     </div>
 </section>
 
-<div class="dashboard-callout" style="margin-bottom:1.5rem;">
+<div class="dashboard-callout glass-card reveal" style="margin-bottom:1.5rem;">
     <div class="callout-icon">💰</div>
     <div>
         <span class="card-kicker">HOW IT WORKS</span>
@@ -20,7 +25,7 @@
 </div>
 
 <div class="station-detail-layout">
-    <div class="detail-main-card">
+    <div class="detail-main-card glass-card reveal">
         <form method="POST" action="{{ url_for('cost_estimator') }}" class="auth-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             
@@ -57,7 +62,7 @@
         </form>
     </div>
     
-    <aside class="detail-side-card">
+    <aside class="detail-side-card glass-card reveal">
         <span class="card-kicker">RESULT</span>
         {% if result %}
             <h2 style="font-size:2rem;color:var(--primary);">₹{{ result.cost }}</h2>
@@ -87,6 +92,8 @@
             <p style="color:var(--muted);">Enter your details on the left and click Calculate to see estimated time and cost.</p>
         {% endif %}
     </aside>
+</div>
+
 </div>
 
 {% endblock %}

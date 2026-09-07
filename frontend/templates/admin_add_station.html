@@ -2,16 +2,21 @@
 {% block title %}Add Station | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">ADMIN</div>
-        <h1>Add <span>Station</span></h1>
+        <h1>Add <span class="gradient-text">Station</span></h1>
         <p>Add a new charging station to the network.</p>
     </div>
     <a class="btn btn-outline" href="{{ url_for('admin_stations') }}">← Back to stations</a>
 </section>
 
-<div class="auth-card" style="max-width:600px;">
+<div class="auth-card glass-card" style="max-width:600px;margin:0 auto;">
     <form method="POST" action="{{ url_for('admin_add_station') }}" class="auth-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
@@ -80,6 +85,8 @@
         
         <button type="submit" class="btn btn-primary btn-full">Add Station</button>
     </form>
+</div>
+
 </div>
 
 {% endblock %}

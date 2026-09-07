@@ -2,15 +2,20 @@
 {% block title %}My Vehicle | ChargeEase{% endblock %}
 {% block content %}
 
-<section class="page-hero compact-hero">
+<!-- Background Photo -->
+<div style="position: fixed; inset: 0; z-index: -1; background: url('/static/images/ev-station-2.jpg') center/cover no-repeat; filter: brightness(0.3);"></div>
+
+<div class="page-enter">
+
+<section class="page-hero compact-hero reveal">
     <div>
         <div class="card-kicker" style="margin-bottom: 0.5rem;">MY EV</div>
-        <h1>My <span>vehicle profile</span></h1>
+        <h1>My <span class="gradient-text">vehicle profile</span></h1>
         <p>Save your EV details so we can highlight compatible chargers for you on the map.</p>
     </div>
 </section>
 
-<div class="auth-card" style="max-width:480px;">
+<div class="auth-card glass-card" style="max-width:480px;margin:0 auto;">
     <form method="POST" action="{{ url_for('vehicle_profile') }}" class="auth-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -39,6 +44,8 @@
 
         <button type="submit" class="btn btn-primary btn-full">Save vehicle</button>
     </form>
+</div>
+
 </div>
 
 {% endblock %}
