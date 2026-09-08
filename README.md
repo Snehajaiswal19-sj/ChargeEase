@@ -48,28 +48,32 @@ ChargeEase 2.0 is a full-stack EV Charging Station Finder and Slot Booking web a
 ## 📸 Screenshots
 
 ### Home Page
-<img width="1366" height="595" alt="image" src="https://github.com/user-attachments/assets/ffe023ce-6b80-47e1-ac6d-1b3aa48d5000" />
-<img width="1365" height="627" alt="image" src="https://github.com/user-attachments/assets/05d63dc8-2cb8-4615-9610-4a398dfd714f" />
-<img width="1362" height="646" alt="image" src="https://github.com/user-attachments/assets/acd21b68-2de6-40cb-9e90-37e8f6b684f1" />
+<img width="1366" height="646" alt="image" src="https://github.com/user-attachments/assets/880923b3-5104-4094-bab0-e4392804d718" />
+<img width="1366" height="640" alt="image" src="https://github.com/user-attachments/assets/a611129d-5f18-4f0b-a6ac-1e636c97c2ee" />
+<img width="1366" height="650" alt="image" src="https://github.com/user-attachments/assets/a2e78934-073c-45e3-b9a6-e493e248c5b4" />
 
 ### Dashboard
-<img width="1366" height="641" alt="image" src="https://github.com/user-attachments/assets/84aec3c2-aa90-4d72-8f7b-690f806fe57e" />
-<img width="1366" height="605" alt="image" src="https://github.com/user-attachments/assets/baa916d4-0d9b-46f2-8f6b-bf4eba47f626" />
-<img width="1366" height="646" alt="image" src="https://github.com/user-attachments/assets/7e1e9f40-8813-4247-96a6-3e6d2c7f4498" />
+<img width="1366" height="625" alt="image" src="https://github.com/user-attachments/assets/1671d072-f7cb-41c5-9a5f-06a5cf89ebd3" />
+<img width="1358" height="420" alt="image" src="https://github.com/user-attachments/assets/1fb3ca3a-ee48-45a8-8e70-2b95d17045ed" />
+<img width="1366" height="570" alt="image" src="https://github.com/user-attachments/assets/a8af20ec-a2ff-4847-b926-494bc675bb80" />
 
 ### Stations
-<img width="1366" height="549" alt="image" src="https://github.com/user-attachments/assets/fa03d8ef-df52-4b2d-9122-947762667401" />
-<img width="1366" height="644" alt="image" src="https://github.com/user-attachments/assets/f59b1b91-b197-40ce-bf5c-753b0c0b6895" />
-<img width="1366" height="630" alt="image" src="https://github.com/user-attachments/assets/36ef7b69-9efc-471a-adbf-e91ce1ae1556" />
-<img width="1366" height="585" alt="image" src="https://github.com/user-attachments/assets/74e38597-1810-4f57-8e90-3bbc59042bc7" />
+<img width="1366" height="514" alt="image" src="https://github.com/user-attachments/assets/7c2a66fd-f8f1-4f4f-aa32-c6dd46eba58a" />
+<img width="1366" height="592" alt="image" src="https://github.com/user-attachments/assets/9b2eec84-67f6-4525-b1ed-917301a2a840" />
+<img width="1366" height="595" alt="image" src="https://github.com/user-attachments/assets/01ddde0e-76ca-4784-8920-7dbecdf56bca" />
+<img width="1365" height="642" alt="image" src="https://github.com/user-attachments/assets/bcc4c476-a528-445f-9bcc-f357cf8845a8" />
+<img width="1355" height="471" alt="image" src="https://github.com/user-attachments/assets/f465b8a0-fd24-4a68-aca0-980bbc0c40ce" />
 
 ### Benchmark
-<img width="1366" height="641" alt="image" src="https://github.com/user-attachments/assets/304d6d46-9b83-4bd9-82f4-1e527898f5a7" />
-<img width="1366" height="643" alt="image" src="https://github.com/user-attachments/assets/54bd0c80-e3a5-406f-b866-138cfecaacbd" />
+<img width="1366" height="383" alt="image" src="https://github.com/user-attachments/assets/9f6acac6-f291-4c2d-b63a-1d9158fedd33" />
+<img width="1364" height="595" alt="image" src="https://github.com/user-attachments/assets/a3ea9b0a-fd9b-4290-bf71-cbd5f6c080a5" />
+<img width="1366" height="595" alt="image" src="https://github.com/user-attachments/assets/31f55d15-c2d0-48fe-b395-8b8508615681" />
+
 
 ### Admin Dashboard
-<img width="1366" height="415" alt="image" src="https://github.com/user-attachments/assets/fc5659de-6c98-4aaa-ba9a-e92a030a6a60" />
-<img width="1366" height="653" alt="image" src="https://github.com/user-attachments/assets/4dec33bf-bce4-4cd9-8715-29359bf782a6" />
+<img width="1366" height="480" alt="image" src="https://github.com/user-attachments/assets/db43338d-c26a-40db-aafe-126a600fe0e1" />
+<img width="1366" height="502" alt="image" src="https://github.com/user-attachments/assets/c3cbc4b9-7180-4ec7-a980-27def874b5bf" />
+
 
 ## 🚀 Getting Started
 
