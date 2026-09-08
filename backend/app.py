@@ -110,11 +110,12 @@ def _send_email_now(to_email, subject, body):
         msg["From"] = f"ChargeEase <{SMTP_EMAIL}>"
         msg["To"] = to_email
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30) as server:
             server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
             server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
+            print(f"Email sent successfully to {to_email}")
     except Exception as e:
-        print("Email send error:", e)
+        print(f"Email send error: {e}")
 
 def send_email_async(to_email, subject, body):
     """Send email in a background thread so a slow/failing SMTP server never blocks the request."""
@@ -164,7 +165,6 @@ RESET_TOKEN_VALID_MINUTES = 30
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if "user_id" in session: return redirect(url_for("dashboard"))
-
     if request.method == "POST":
         submitted_token = request.form.get("csrf_token", "")
         if not submitted_token or submitted_token != session.get("csrf_token"):
@@ -192,7 +192,6 @@ def forgot_password():
                 f"If you didn't request this, you can safely ignore this email.\n\n- ChargeEase"
             )
 
-        # Same message whether or not the email is registered, so we don't leak account existence.
         flash("If that email is registered, a password reset link has been sent.", "success")
         return redirect(url_for("login"))
 
@@ -226,10 +225,8 @@ def reset_password(token):
 
         users_collection.update_one(
             {"_id": user["_id"]},
-            {
-                "$set": {"password": generate_password_hash(new_password)},
-                "$unset": {"reset_token": "", "reset_token_expires": ""}
-            }
+            {"$set": {"password": generate_password_hash(new_password)},
+             "$unset": {"reset_token": "", "reset_token_expires": ""}}
         )
         flash("Password reset successfully. Please login with your new password.", "success")
         return redirect(url_for("login"))
@@ -242,12 +239,11 @@ def dashboard():
     from bson import ObjectId
     user = users_collection.find_one({"_id": ObjectId(session["user_id"])}, {"_id": 0, "vehicle": 1})
     vehicle = user.get("vehicle") if user else None
-    
-    # Get user's favorite stations
+
     user_favorites = list(favorites_collection.find({"user_id": session["user_id"]}))
     favorite_station_ids = [f["station_id"] for f in user_favorites]
     favorite_stations = list(stations_collection.find({"station_id": {"$in": favorite_station_ids}}, {"_id": 0}))
-    
+
     return render_template("dashboard.html", vehicle=vehicle, favorite_stations=favorite_stations)
 
 @app.route("/stations")
@@ -282,11 +278,9 @@ def stations():
     charger_types = sorted(stations_collection.distinct("charger_type"))
     connector_types = sorted(stations_collection.distinct("connector_type"))
 
-    # Get user's favorite station IDs
     user_favorites = list(favorites_collection.find({"user_id": session["user_id"]}))
     favorite_station_ids = {f["station_id"] for f in user_favorites}
 
-    # Sorting via C
     try:
         c_input = str(len(stations)) + "\n"
         for s in stations:
@@ -620,8 +614,8 @@ def nearby_stations():
         return {"result": "INVALID_LOCATION"}, 400
 
     all_stations = list(stations_collection.find({}, {"_id": 0}))
-
     stations_with_distance = []
+
     for s in all_stations:
         if "latitude" not in s or "longitude" not in s:
             continue
@@ -887,9 +881,9 @@ def calculate_recommendation_score(station, user_lat, user_lng, user_connector):
     W_AVAILABILITY = 30
     W_RATING = 20
     W_CONNECTOR = 10
-    
+
     score = 0
-    
+
     try:
         distance = station.get("distance", 999)
         if distance <= 5:
@@ -902,7 +896,7 @@ def calculate_recommendation_score(station, user_lat, user_lng, user_connector):
             score += W_DISTANCE * 0.15
     except:
         pass
-    
+
     try:
         total = station.get("total_slots", 0)
         available = station.get("available_slots", 0)
@@ -910,7 +904,7 @@ def calculate_recommendation_score(station, user_lat, user_lng, user_connector):
             score += W_AVAILABILITY * (available / total)
     except:
         pass
-    
+
     try:
         rating = station.get("avg_rating", None)
         if rating is None:
@@ -929,7 +923,7 @@ def calculate_recommendation_score(station, user_lat, user_lng, user_connector):
             score += W_RATING * 0.2
     except:
         pass
-    
+
     try:
         station_connector = station.get("connector_type", "")
         if user_connector and station_connector:
@@ -939,32 +933,32 @@ def calculate_recommendation_score(station, user_lat, user_lng, user_connector):
             score += W_CONNECTOR * 0.3
     except:
         pass
-    
+
     return round(min(score, 100), 1)
 
 @app.route("/recommendations")
 def recommendations():
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
+
     from bson import ObjectId
     user = users_collection.find_one({"_id": ObjectId(session["user_id"])})
     user_vehicle = (user.get("vehicle") or {}) if user else {}
     user_connector = user_vehicle.get("connector_type")
-    
+
     stations_list = list(stations_collection.find({}, {"_id": 0}))
-    
+
     for station in stations_list:
         s_reviews = list(reviews_collection.find({"station_id": station["station_id"]}, {"rating": 1}))
         station["review_count"] = len(s_reviews)
         station["avg_rating"] = round(sum(r["rating"] for r in s_reviews) / len(s_reviews), 1) if s_reviews else None
-    
+
     for station in stations_list:
         station["recommendation_score"] = calculate_recommendation_score(station, None, None, user_connector)
-    
+
     stations_list.sort(key=lambda x: x["recommendation_score"], reverse=True)
     top_recommendations = stations_list[:10]
-    
+
     return render_template("recommendations.html", recommendations=top_recommendations, user_vehicle=user_vehicle, user_connector=user_connector)
 
 # =========================
@@ -976,20 +970,19 @@ def favorites():
     """View favorite stations"""
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
+
     user_favorites = list(favorites_collection.find({"user_id": session["user_id"]}))
     favorite_station_ids = [f["station_id"] for f in user_favorites]
-    
+
     favorite_stations = []
     for sid in favorite_station_ids:
         station = stations_collection.find_one({"station_id": sid}, {"_id": 0})
         if station:
-            # Add rating info
             s_reviews = list(reviews_collection.find({"station_id": sid}, {"rating": 1}))
             station["review_count"] = len(s_reviews)
             station["avg_rating"] = round(sum(r["rating"] for r in s_reviews) / len(s_reviews), 1) if s_reviews else None
             favorite_stations.append(station)
-    
+
     return render_template("favorites.html", stations=favorite_stations)
 
 @app.route("/favorite/<int:station_id>", methods=["POST"])
@@ -997,17 +990,17 @@ def add_favorite(station_id):
     """Add station to favorites"""
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
+
     submitted_token = request.form.get("csrf_token", "")
     if not submitted_token or submitted_token != session.get("csrf_token"):
         flash("Your session expired, please try again.", "error")
         return redirect(url_for("station_details", station_id=station_id))
-    
+
     station = stations_collection.find_one({"station_id": station_id})
     if not station:
         flash("Charging station not found.", "error")
         return redirect(url_for("stations"))
-    
+
     try:
         favorites_collection.insert_one({
             "user_id": session["user_id"],
@@ -1018,7 +1011,7 @@ def add_favorite(station_id):
         flash(f"Added '{station['name']}' to favorites!", "success")
     except DuplicateKeyError:
         flash("This station is already in your favorites.", "error")
-    
+
     return redirect(url_for("station_details", station_id=station_id))
 
 @app.route("/favorite/<int:station_id>/remove", methods=["POST"])
@@ -1026,16 +1019,15 @@ def remove_favorite(station_id):
     """Remove station from favorites"""
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
+
     submitted_token = request.form.get("csrf_token", "")
     if not submitted_token or submitted_token != session.get("csrf_token"):
         flash("Your session expired, please try again.", "error")
         return redirect(url_for("favorites"))
-    
+
     favorites_collection.delete_one({"user_id": session["user_id"], "station_id": station_id})
     flash("Station removed from favorites.", "success")
-    
-    # Redirect back to appropriate page
+
     referrer = request.referrer
     if referrer and "favorites" in referrer:
         return redirect(url_for("favorites"))
@@ -1050,42 +1042,36 @@ def cost_estimator():
     """Estimate charging time and cost"""
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
+
     result = None
-    
+
     if request.method == "POST":
         submitted_token = request.form.get("csrf_token", "")
         if not submitted_token or submitted_token != session.get("csrf_token"):
             flash("Your session expired, please try again.", "error")
             return redirect(url_for("cost_estimator"))
-        
+
         try:
             battery_capacity = float(request.form.get("battery_capacity", ""))
             current_percent = float(request.form.get("current_percent", ""))
             target_percent = float(request.form.get("target_percent", ""))
             charger_power = float(request.form.get("charger_power", ""))
             cost_per_kwh = float(request.form.get("cost_per_kwh", ""))
-            
+
             if battery_capacity <= 0 or current_percent < 0 or current_percent > 100 or target_percent <= current_percent or target_percent > 100:
                 flash("Please enter valid values.", "error")
                 return redirect(url_for("cost_estimator"))
-            
+
             if charger_power <= 0 or cost_per_kwh < 0:
                 flash("Please enter valid charger power and cost.", "error")
                 return redirect(url_for("cost_estimator"))
-            
-            # Calculate energy needed (kWh)
+
             energy_needed = battery_capacity * (target_percent - current_percent) / 100
-            
-            # Calculate time (hours) = energy / power
-            # Charging efficiency ~90%
             efficiency = 0.9
             time_hours = energy_needed / (charger_power * efficiency)
             time_minutes = round(time_hours * 60, 1)
-            
-            # Calculate cost
             cost = round(energy_needed * cost_per_kwh, 2)
-            
+
             result = {
                 "energy_needed": round(energy_needed, 2),
                 "time_minutes": time_minutes,
@@ -1097,11 +1083,11 @@ def cost_estimator():
                 "charger_power": charger_power,
                 "cost_per_kwh": cost_per_kwh
             }
-            
+
         except ValueError:
             flash("Please enter valid numbers.", "error")
             return redirect(url_for("cost_estimator"))
-    
+
     return render_template("cost_estimator.html", result=result)
 
 # =========================
@@ -1113,35 +1099,29 @@ def range_calculator():
     """Calculate how far you can go with current battery"""
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
+
     result = None
-    
+
     if request.method == "POST":
         submitted_token = request.form.get("csrf_token", "")
         if not submitted_token or submitted_token != session.get("csrf_token"):
             flash("Your session expired, please try again.", "error")
             return redirect(url_for("range_calculator"))
-        
+
         try:
             battery_capacity = float(request.form.get("battery_capacity", ""))
             current_percent = float(request.form.get("current_percent", ""))
             efficiency = float(request.form.get("efficiency", ""))
-            
+
             if battery_capacity <= 0 or current_percent < 0 or current_percent > 100 or efficiency <= 0:
                 flash("Please enter valid values.", "error")
                 return redirect(url_for("range_calculator"))
-            
-            # Available energy (kWh)
+
             available_energy = battery_capacity * current_percent / 100
-            
-            # Range (km) = available_energy * efficiency (km/kWh)
             range_km = round(available_energy * efficiency, 1)
-            
-            # Also show range at different speeds
-            # Typical efficiency varies: city ~6 km/kWh, highway ~4 km/kWh, mixed ~5 km/kWh
-            city_range = round(available_energy * (efficiency * 1.2), 1)  # 20% better in city
-            highway_range = round(available_energy * (efficiency * 0.8), 1)  # 20% worse on highway
-            
+            city_range = round(available_energy * (efficiency * 1.2), 1)
+            highway_range = round(available_energy * (efficiency * 0.8), 1)
+
             result = {
                 "available_energy": round(available_energy, 2),
                 "range_km": range_km,
@@ -1151,11 +1131,11 @@ def range_calculator():
                 "current_percent": current_percent,
                 "efficiency": efficiency
             }
-            
+
         except ValueError:
             flash("Please enter valid numbers.", "error")
             return redirect(url_for("range_calculator"))
-    
+
     return render_template("range_calculator.html", result=result)
 
 # =========================
@@ -1190,10 +1170,10 @@ def admin_dashboard():
     total_bookings = bookings_collection.count_documents({})
     active_bookings = bookings_collection.count_documents({"status": "reserved"})
     total_reviews = reviews_collection.count_documents({})
-    
+
     recent_bookings = list(bookings_collection.find().sort("created_at", -1).limit(10))
     recent_users = list(users_collection.find({}, {"_id": 1, "name": 1, "email": 1, "created_at": 1}).sort("created_at", -1).limit(5))
-    
+
     return render_template("admin_dashboard.html",
         total_users=total_users,
         total_stations=total_stations,
@@ -1220,7 +1200,7 @@ def admin_add_station():
         if not submitted_token or submitted_token != session.get("csrf_token"):
             flash("Your session expired, please try again.", "error")
             return redirect(url_for("admin_add_station"))
-        
+
         name = request.form.get("name", "").strip()
         location = request.form.get("location", "").strip()
         charger_type = request.form.get("charger_type", "").strip()
@@ -1228,11 +1208,11 @@ def admin_add_station():
         total_slots = request.form.get("total_slots", "").strip()
         latitude = request.form.get("latitude", "").strip()
         longitude = request.form.get("longitude", "").strip()
-        
+
         if not name or not location or not charger_type or not connector_type or not total_slots:
             flash("Please fill all required fields.", "error")
             return redirect(url_for("admin_add_station"))
-        
+
         try:
             total_slots = int(total_slots)
             if total_slots <= 0:
@@ -1240,15 +1220,15 @@ def admin_add_station():
         except ValueError:
             flash("Please enter a valid number of slots.", "error")
             return redirect(url_for("admin_add_station"))
-        
+
         last_station = stations_collection.find_one(sort=[("station_id", -1)])
         next_id = (last_station["station_id"] + 1) if last_station else 101
-        
+
         try:
             distance = float(request.form.get("distance", "0"))
         except ValueError:
             distance = 0
-        
+
         station_doc = {
             "station_id": next_id,
             "name": name,
@@ -1263,11 +1243,11 @@ def admin_add_station():
             "longitude": float(longitude) if longitude else None,
             "created_at": datetime.utcnow()
         }
-        
+
         stations_collection.insert_one(station_doc)
         flash(f"Station '{name}' added successfully!", "success")
         return redirect(url_for("admin_stations"))
-    
+
     return render_template("admin_add_station.html")
 
 @app.route("/admin/stations/edit/<int:station_id>", methods=["GET", "POST"])
@@ -1278,24 +1258,24 @@ def admin_edit_station(station_id):
     if not station:
         flash("Station not found.", "error")
         return redirect(url_for("admin_stations"))
-    
+
     if request.method == "POST":
         submitted_token = request.form.get("csrf_token", "")
         if not submitted_token or submitted_token != session.get("csrf_token"):
             flash("Your session expired, please try again.", "error")
             return redirect(url_for("admin_edit_station", station_id=station_id))
-        
+
         name = request.form.get("name", "").strip()
         location = request.form.get("location", "").strip()
         charger_type = request.form.get("charger_type", "").strip()
         connector_type = request.form.get("connector_type", "").strip()
         total_slots = request.form.get("total_slots", "").strip()
         available_slots = request.form.get("available_slots", "").strip()
-        
+
         if not name or not location or not charger_type or not connector_type or not total_slots:
             flash("Please fill all required fields.", "error")
             return redirect(url_for("admin_edit_station", station_id=station_id))
-        
+
         try:
             total_slots = int(total_slots)
             available_slots = int(available_slots)
@@ -1304,7 +1284,7 @@ def admin_edit_station(station_id):
         except ValueError:
             flash("Please enter valid slot numbers.", "error")
             return redirect(url_for("admin_edit_station", station_id=station_id))
-        
+
         update_data = {
             "name": name,
             "location": location,
@@ -1313,17 +1293,16 @@ def admin_edit_station(station_id):
             "total_slots": total_slots,
             "available_slots": available_slots,
         }
-        
-        # Optional fields
+
         if request.form.get("latitude", "").strip():
             update_data["latitude"] = float(request.form.get("latitude"))
         if request.form.get("longitude", "").strip():
             update_data["longitude"] = float(request.form.get("longitude"))
-        
+
         stations_collection.update_one({"station_id": station_id}, {"$set": update_data})
         flash("Station updated successfully!", "success")
         return redirect(url_for("admin_stations"))
-    
+
     return render_template("admin_edit_station.html", station=station)
 
 @app.route("/admin/stations/delete/<int:station_id>", methods=["POST"])
@@ -1334,17 +1313,17 @@ def admin_delete_station(station_id):
     if not submitted_token or submitted_token != session.get("csrf_token"):
         flash("Your session expired, please try again.", "error")
         return redirect(url_for("admin_stations"))
-    
+
     station = stations_collection.find_one({"station_id": station_id})
     if not station:
         flash("Station not found.", "error")
         return redirect(url_for("admin_stations"))
-    
+
     bookings_collection.delete_many({"station_id": station_id})
     reviews_collection.delete_many({"station_id": station_id})
     favorites_collection.delete_many({"station_id": station_id})
     stations_collection.delete_one({"station_id": station_id})
-    
+
     flash(f"Station '{station['name']}' deleted successfully!", "success")
     return redirect(url_for("admin_stations"))
 
@@ -1371,25 +1350,24 @@ def benchmark():
     """DSA Benchmarking - Linear Search & Selection Sort performance"""
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
-    # Linear Search Benchmark
+
     linear_results = []
     search_sizes = [10, 50, 100, 200, 500, 800, 1000]
-    
+
     for n in search_sizes:
         try:
             c_input = str(n) + "\n"
             for i in range(1, n + 1):
                 c_input += str(i) + "\n"
             c_input += str(n) + "\n"
-            
+
             start = time.perf_counter()
             process = run_c(SEARCH_EXE, c_input)
             end = time.perf_counter()
-            
+
             elapsed_ms = round((end - start) * 1000, 3)
             found = "FOUND" in process.stdout
-            
+
             linear_results.append({
                 "n": n,
                 "time_ms": elapsed_ms,
@@ -1402,11 +1380,10 @@ def benchmark():
                 "time_ms": 0,
                 "found": False
             })
-    
-    # Selection Sort Benchmark
+
     sort_results = []
     sort_sizes = [10, 50, 100, 200, 500, 800, 1000]
-    
+
     for n in sort_sizes:
         try:
             c_input = str(n) + "\n"
@@ -1414,14 +1391,14 @@ def benchmark():
             for i in range(1, n + 1):
                 dist = round(random.uniform(0.1, 50.0), 1)
                 c_input += f"{i} {dist}\n"
-            
+
             start = time.perf_counter()
             process = run_c(SORT_EXE, c_input)
             end = time.perf_counter()
-            
+
             elapsed_ms = round((end - start) * 1000, 3)
             comparisons = len(process.stdout.strip().splitlines())
-            
+
             sort_results.append({
                 "n": n,
                 "time_ms": elapsed_ms,
@@ -1434,7 +1411,7 @@ def benchmark():
                 "time_ms": 0,
                 "comparisons": 0
             })
-    
+
     return render_template("benchmark.html", 
         linear_results=linear_results,
         sort_results=sort_results
